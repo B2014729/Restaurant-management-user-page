@@ -1,4 +1,11 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import App from './App.vue';
+import VueCookies from 'vue-cookies';
+import 'bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
+import router from './router/index.js';
 
-createApp(App).mount('#app')
+var appMain = createApp(App);
+appMain.use(router);
+appMain.use(VueCookies);
+appMain.mount('#app');
