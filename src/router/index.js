@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
-
+import store from "@/store";
 const routes = [
     {
         path: '/',
@@ -10,6 +10,23 @@ const routes = [
         path: '/nhan-vien/thu-ngan',
         name: 'cashier-page',
         component: () => import('@/layouts/cashierLayout.vue'),
+        beforeEnter: (to, from, next) => {
+            if (!store.state.staff || (store.state.staff.quyentruycap != 1)) {
+                next('/');
+            }
+            next();
+        }
+    },
+    {
+        path: '/nhan-vien/bep',
+        name: 'kitchen-page',
+        component: () => import('@/layouts/kitchenLayout.vue'),
+        // beforeEnter: (to, from, next) => {
+        //     if (!store.state.staff || (store.state.staff.quyentruycap != 3)) {
+        //         next('/');
+        //     }
+        //     next();
+        // }
     },
     // {
     //     path: '/nhan-vien/phuc-vu',

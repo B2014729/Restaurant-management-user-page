@@ -3,18 +3,18 @@
         <div class="modal-booking-content">
             <div class="p-3 d-flex flex-column">
                 <div class="d-flex justify-content-between">
-                    <h5 class="text-dark fw-bold">Thanh toán hóa đơn 2</h5>
+                    <h5 class="text-dark fw-bold">Thanh toán hóa đơn {{ idBill }}</h5>
                     <button type="button" class="btn-close" @click="closeModal"></button>
                 </div>
                 <div class="mt-4" style="min-height: 510px;">
                     <div class="d-flex justify-content-between">
                         <div class="float-start">
-                            <h6 class="text-dark fw-bold text-start">Mã HĐ: 2</h6>
-                            <h6 class="text-dark fw-bold text-start">Nhân viên: Nguyễn Anh Thư</h6>
+                            <h6 class="text-dark fw-bold text-start">Mã HĐ: {{ billInfor.idhoadon }}</h6>
+                            <h6 class="text-dark fw-bold text-start">Nhân viên: {{ billInfor.tennhanvien }}</h6>
                         </div>
                         <div class="me-2">
-                            <h6 class="text-dark fw-bold text-start">Bàn số: 13</h6>
-                            <h6 class="text-dark fw-bold">Giờ vào: 18:39 03/03/2024</h6>
+                            <h6 class="text-dark fw-bold text-start">Bàn số: {{ billInfor.idban }}</h6>
+                            <h6 class="text-dark fw-bold">Giờ vào: {{ formatDateTime(billInfor.ngaygiotao) }}</h6>
                         </div>
                     </div>
                     <div>
@@ -30,62 +30,35 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
-                                    </tr>
-
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Lẩu cá hồi</td>
-                                        <td>1</td>
-                                        <td>130,000</td>
+                                    <tr v-for="(item, index) in billInfor.chitietdatmon" :key="index">
+                                        <th scope="row">{{ index + 1 }}</th>
+                                        <td>{{ item.mon.tenmon }}</td>
+                                        <td>{{ item.soluong }}</td>
+                                        <td>{{ formatNumber(item.mon.gia) }}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="fw-bold text-end bg-warning">Tổng cộng</td>
-                                        <td class="fw-bold">1,309,000</td>
+                                        <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="d-flex justify-content-end">
                             <div class="input-group input-group-sm mb-3" style="width: 46%;">
-                                <span class="input-group-text fw-bold   " id="inputGroup-sizing-sm">
+                                <span class="input-group-text fw-bold" id="inputGroup-sizing-sm">
                                     Chiết khấu (%):</span>
                                 <input type="number" class="form-control" aria-label="Sizing example input"
-                                    aria-describedby="inputGroup-sizing-sm">
+                                    aria-describedby="inputGroup-sizing-sm" v-model="reduced">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end">
+                            <div class="input-group input-group-sm mb-3" style="width: 29%;">
+                                <span class=" input-group-text fw-bold" id="inputGroup-sizing-sm"
+                                    style="font-size: 16px;">
+                                    Thanh toán :
+                                    {{ formatNumber(billInfor.thanhtoan - ((billInfor.thanhtoan) * reduced) / 100) }}
+                                    vnd
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -101,6 +74,7 @@
 </template>
 
 <script>
+import billService from '@/services/bill.service';
 
 export default {
     setup(props, context) {
@@ -108,22 +82,53 @@ export default {
             context.emit("close");
         }
 
+        const formatNumber = (number) => {
+            return (new Intl.NumberFormat().format(number));
+        }
+
+        function formatDateTime(date) {
+            let newDate = new Date(date);
+            let hours = newDate.getHours() >= 10 ? newDate.getHours() : `0${newDate.getHours()}`;
+            let minutes = newDate.getMinutes() >= 10 ? newDate.getMinutes() : `0${newDate.getMinutes()}`;
+            let seconds = newDate.getSeconds() >= 10 ? newDate.getSeconds() : `0${newDate.getSeconds()}`;
+            let dateIn = newDate.getDate() >= 10 ? newDate.getDate() : `0${newDate.getDate()}`;
+            let month = (newDate.getMonth() + 1) >= 10 ? (newDate.getMonth() + 1) : `0${(newDate.getMonth() + 1)}`;
+            let year = newDate.getFullYear() >= 10 ? newDate.getFullYear() : `0${newDate.getFullYear()}`;
+
+            return `${hours}:${minutes}:${seconds} ${dateIn}/${month}/${year}`;
+        }
+
         return {
-            closeModal,
+            closeModal, formatDateTime, formatNumber
         };
     },
 
     props: {
-        idTable: {
+        idBill: {
             type: Number,
         }
     },
 
-    async created() {
+    data() {
+        return {
+            reduced: 0,
+            billInfor: {},
+        };
+    },
 
+    async created() {
+        await this.fetchData();
     },
 
     methods: {
+        async fetchData() {
+            try {
+                this.billInfor = await billService.FindOneById(this.idBill);
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
         onPrint() {
             window.print();
         },
@@ -148,7 +153,7 @@ export default {
 .modal-booking-content {
     background-color: rgb(255, 255, 255);
     width: 50%;
-    margin: 50px 0px 50px 0px;
+    margin: 20px 0px 20px 0px;
     border-radius: 5px;
     animation-name: animationShow;
     animation-duration: 300ms;
@@ -160,7 +165,7 @@ export default {
     }
 
     100% {
-        margin-top: 50px;
+        margin-top: 20px;
     }
 }
 

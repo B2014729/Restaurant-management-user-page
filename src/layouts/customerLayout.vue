@@ -1,7 +1,7 @@
 <template>
     <div class="container-customer">
         <loginModal v-if="modalLoginActive" @close="toggleModalLogin" @onRegister="toggleModalRegister"
-            @submit="login($event)">
+            @login="login($event)" :message="message" :errorMessage="errorMessage">
         </loginModal>
         <registerModal v-if="modalRegisterActive" @close="toggleModalRegister" @submit="register($event)">
         </registerModal>
@@ -30,7 +30,6 @@
                     <button class="btn">
                         <i class="fa-brands fa-google-plus text-secondary fs-1"></i>
                     </button>
-
                 </div>
             </div>
         </footer>
@@ -48,6 +47,7 @@ import menuPage from "@/pages/customer/menuPage.vue";
 import loginModal from "@/components/modals/loginModal.vue";
 import registerModal from "@/components/modals/registerModal.vue";
 
+import accountService from '@/services/account.service';
 export default {
     name: 'App',
     components: {
@@ -59,6 +59,8 @@ export default {
     setup() {
         let modalLoginActive = ref(false);
         let modalRegisterActive = ref(false);
+        let message = ref('');
+        let errorMessage = ref(false);
 
         const toggleModalLogin = () => {
             modalRegisterActive.value = false;
@@ -70,19 +72,46 @@ export default {
         }
 
         return {
-            modalLoginActive, modalRegisterActive, toggleModalLogin, toggleModalRegister,
+            modalLoginActive, modalRegisterActive, toggleModalLogin, toggleModalRegister, message, errorMessage
         };
     },
 
     methods: {
-        login(data) {
-            console.log(data.username, data.password);
+        async login(data) {
+            try {
+                await accountService.Login(data).then((result) => {
+                    if (result.status == 200) {
+                        this.$cookies.set('jwt', result.headers.authorization);
+                        this.$store.dispatch('staff',
+                            {
+                                token: result.headers.authorization,
+                                tendangnhap: result.data.data[0].tendangnhap,
+                                quyentruycap: result.data.data[0].quyen,
+                            });
+
+                        if (result.data.data[0].quyen == 1) {
+                            this.$router.push('/nhan-vien/thu-ngan');
+                        }
+                        else if (result.data.data[0].quyen == 3) {
+                            this.$router.push('/nhan-vien/bep');
+                        }
+                        else {
+                            throw '';//Gay phat sinh loi neu khong thay tai khoan dang nhap phu hop
+                        }
+                    }
+                });
+            } catch (error) {
+                this.message = 'Thông tin đăng nhập không hợp lệ';
+                this.errorMessage = true;
+                console.log(error);
+            }
         },
+
 
         register(data) {
             console.log(data.username, data.password, data.passwordConfirm);
-        }
-    }
+        },
+    },
 }
 </script>
 

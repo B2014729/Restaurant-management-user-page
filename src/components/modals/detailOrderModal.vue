@@ -3,20 +3,10 @@
         <div class="modal-booking-content">
             <div class="p-3 d-flex flex-column">
                 <div class="d-flex justify-content-between">
-                    <h5 class="text-dark fw-bold">Thông tin dùng món</h5>
+                    <h5 class="text-dark fw-bold">Thông tin đặt món {{ idOrder }}</h5>
                     <button type="button" class="btn-close" @click="closeModal"></button>
                 </div>
                 <div class="mt-4" style="min-height: 510px;">
-                    <div class="d-flex justify-content-between">
-                        <div class="float-start">
-                            <h6 class="text-dark fw-bold text-start">Bàn số: {{ idTable }}</h6>
-                            <h6 class="text-dark fw-bold">Giờ vào: {{ formatDateTime(billInfor.ngaygiotao) }}</h6>
-                        </div>
-                        <div class="py-2">
-                            <span v-if="checkTableIsEating()" class="status-busy">Đang ăn</span>
-                            <span v-else class="status-free">Bàn trống</span>
-                        </div>
-                    </div>
                     <div>
                         <h6 class="fw-bold text-warning">Danh sách món đã dùng</h6>
                         <div>
@@ -26,7 +16,7 @@
                                         <th scope="col" style="width: 20px;">STT</th>
                                         <th scope="col">Tên món</th>
                                         <th scope="col" style="width: 100px;">Số lượng</th>
-                                        <th scope="col">Đơn giá (vnd)</th>
+                                        <th scope="col">Ghi chú</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -34,11 +24,7 @@
                                         <th scope="row">{{ index + 1 }}</th>
                                         <td>{{ item.mon.tenmon }}</td>
                                         <td>{{ item.soluong }}</td>
-                                        <td>{{ formatNumber(item.mon.gia) }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3" class="fw-bold text-end bg-warning">Tổng cộng</td>
-                                        <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }}</td>
+                                        <td>{{ item.ghichu }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -47,7 +33,8 @@
                 </div>
                 <div class="d-flex justify-content-end mt-auto w-100">
                     <div>
-                        <button type="button" class="btn btn-secondary ms-2" @click="closeModal">Đóng</button>
+                        <button type="button" class="btn btn-outline-danger ms-2" @click="closeModal">Đóng</button>
+                        <button type="button" class="btn btn-success ms-2" @click="onSend">Duyệt</button>
                     </div>
                 </div>
             </div>
@@ -56,39 +43,27 @@
 </template>
 
 <script>
-import billService from '@/services/bill.service';
+import orderService from '@/services/order.service';
 
 export default {
+    props: {
+        idOrder: {
+            type: Number,
+        }
+    },
+
     setup(props, context) {
         const closeModal = () => {
             context.emit("close");
         }
 
-        const formatNumber = (number) => {
-            return (new Intl.NumberFormat().format(number));
-        }
-
-        function formatDateTime(date) {
-            let newDate = new Date(date);
-            let hours = newDate.getHours() >= 10 ? newDate.getHours() : `0${newDate.getHours()}`;
-            let minutes = newDate.getMinutes() >= 10 ? newDate.getMinutes() : `0${newDate.getMinutes()}`;
-            let seconds = newDate.getSeconds() >= 10 ? newDate.getSeconds() : `0${newDate.getSeconds()}`;
-            let dateIn = newDate.getDate() >= 10 ? newDate.getDate() : `0${newDate.getDate()}`;
-            let month = (newDate.getMonth() + 1) >= 10 ? (newDate.getMonth() + 1) : `0${(newDate.getMonth() + 1)}`;
-            let year = newDate.getFullYear() >= 10 ? newDate.getFullYear() : `0${newDate.getFullYear()}`;
-
-            return `${hours}:${minutes}:${seconds} ${dateIn}/${month}/${year}`;
+        const onSend = () => {
+            context.emit("onActive", props.idOrder);
         }
 
         return {
-            closeModal, formatNumber, formatDateTime,
+            closeModal, onSend,
         };
-    },
-
-    props: {
-        idTable: {
-            type: Number,
-        }
     },
 
     data() {
@@ -100,15 +75,13 @@ export default {
 
     async created() {
         await this.fetchData();
-
     },
 
     methods: {
         async fetchData() {
             try {
-                this.billInfor = await billService.FindOneByIdTable(this.idTable);
-                this.listDish = this.billInfor.chitietdatmon;
-
+                this.billInfor = await orderService.FindOneById(this.idOrder);
+                this.listDish = this.billInfor.thongtinchitiet;
             } catch (error) {
                 this.billInfor = {};
                 console.log(error);

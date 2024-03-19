@@ -7,7 +7,7 @@
                 </div>
                 <div class="mt-4">
                     <h4 class="mb-5">Login</h4>
-                    <form @submit.prevent="submit" class="d-flex justify-content-center w-100">
+                    <form @submit.prevent="submit()" class="d-flex justify-content-center w-100">
                         <div class="content-form">
                             <div class="form-floating mb-3">
                                 <input type="text" class="form-control"
@@ -36,9 +36,16 @@
                                     </label>
                                 </div>
                             </div>
-                            <div v-if="false" class="my-2 w-100 d-flex justify-content-end">
+                            <div v-if="errorMessage" class="my-2 w-100 d-flex justify-content-end">
                                 <span class="text-danger" style="font-size: 13px;">
-                                    Please check login information!
+                                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                                    {{ message }}!
+                                </span>
+                            </div>
+                            <div v-if="errorNotifycation" class="my-2 w-100 d-flex justify-content-end">
+                                <span class="text-danger" style="font-size: 13px;">
+                                    <i class="fa-solid fa-triangle-exclamation text-danger"></i>
+                                    Vui lòng kiểm tra thông tin đăng nhập!
                                 </span>
                             </div>
                             <div class="d-grid">
@@ -71,9 +78,20 @@
     </div>
 </template>
 <script>
+import { ref } from 'vue';
 
 export default {
+    props: {
+        message: {
+            type: String,
+        },
+        errorMessage: {
+            type: Boolean
+        }
+    },
+
     setup(props, context) {
+        let errorNotifycation = ref(false);
         const closeModal = () => {
             context.emit("close");
         }
@@ -82,7 +100,7 @@ export default {
             context.emit("onRegister");
         }
 
-        return { closeModal, register };
+        return { closeModal, register, errorNotifycation, };
     },
 
     data() {
@@ -97,13 +115,18 @@ export default {
 
     methods: {
         submit() {
-            console.log(1);
-            this.$emit('submit', this.data);
+            if (!this.data.username || !this.data.password) {
+                this.errorNotifycation = true;
+            } else {
+                this.errorNotifycation = false;
+                this.$emit('login', this.data);
+            }
+
         }
     }
 }
 </script>
-<style  scoped lang="css">
+<style scoped lang="css">
 .modalBooking {
     display: none;
     position: fixed;

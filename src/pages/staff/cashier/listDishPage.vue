@@ -1,58 +1,86 @@
 <template>
-    <selectDishType @onselect="onSelect($event)"></selectDishType>
+    <selectDishTypeComponent @onselect="onSelect($event)"></selectDishTypeComponent>
 
     <div class="row mt-2">
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent @add="onAdd($event)"></dishCardComponent>
+        <div class="col-md-3 col-sm-6 col-12" v-for="(item, index) in listDishCurrent" :key="index">
+            <dishCardComponent @add="onAdd($event)" :dish="item"></dishCardComponent>
         </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent @add="onAdd($event)"></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent @add="onAdd($event)"></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent @add="onAdd($event)"></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent></dishCardComponent>
-        </div>
-        <div class="col-md-3 col-sm-6 col-12">
-            <dishCardComponent></dishCardComponent>
-        </div>
+    </div>
+    <div>
+        <h3 class="text-dark">...</h3>
     </div>
 </template>
 
 <script>
-import selectDishType from '@/components/cashier/selectDishTypeComponent.vue';
+import { ref } from 'vue';
+import selectDishTypeComponent from '@/components/cashier/selectDishTypeComponent.vue';
 import dishCardComponent from '@/components/cashier/dishCardComponent.vue';
+import dishService from '@/services/dish.service';
 export default {
     components: {
-        selectDishType, dishCardComponent
+        selectDishTypeComponent, dishCardComponent
     },
     emits: ['addDish'],
+
+    setup() {
+        let listDishCurrent = ref([]);
+
+        return { listDishCurrent, };
+    },
+
+    data() {
+        return {
+            listDishFetch: [],
+            listDishAll: [],
+        }
+    },
+
+    async created() {
+        try {
+            await this.fetchData();
+            this.listDishFetch.forEach((element) => {
+                this.listDishAll.push(...element.mon);
+            });
+
+            this.listDishCurrent = this.listDishAll;
+        } catch (error) {
+            console.log(error);
+        }
+    },
+
     methods: {
-        onSelect(id) {
-            console.log(id);
+        async fetchData() {
+            try {
+                this.listDishFetch = await dishService.FindAll();// Danh sacn mon duoc phan theo tung danh muc mon
+            } catch (error) {
+                console.log(error);
+            }
         },
 
-        onAdd(data) {
+        onSelect(id) {
+            for (let index = 0; index < this.listDishFetch.length; index++) {
+                const element = this.listDishFetch[index];
+                this.listDishCurrent = [];
+                if (element.idloai == id) {
+                    this.listDishCurrent.push(...element.mon);
+                    break;
+                } else {
+                    this.listDishCurrent = this.listDishAll;
+                }
+            }
+            console.log(123, this.listDishCurrent);
+        },
+
+        onAdd(data) { // Gui emit cho layout de layout xuw li them sp tren giao dien
             this.$emit('addDish', data);
         }
     }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.row {
+    max-height: 550px;
+    overflow: hidden;
+}
+</style>

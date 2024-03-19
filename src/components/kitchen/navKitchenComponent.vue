@@ -6,45 +6,35 @@
                     <h3 class="ps-3 w-75 text-center">Beach Restaurant</h3>
                 </div>
                 <ul class="h-100 d-flex align-items-end">
-                    <a href="#" @click="clickDishList">
+                    <a href="#" @click="order">
                         <li class="active"
-                            :class="{ 'bg-danger': menuActive == 'dishlist' || menuActive == 'order' || menuActive == 'orderInfor' || menuActive == 'personnal' || menuActive == 'workWeek' }">
-                            <i class="fa-solid fa-table"></i> THỰC ĐƠN
+                            :class="{ 'bg-danger': menuActive == 'order' || menuActive == 'personnal' || menuActive == 'workWeek' }">
+                            <i class="fa-brands fa-first-order-alt"></i> ORDER
                         </li>
                     </a>
-                    <a href="#" @click="clickMap">
-                        <li class="active" :class="{ 'bg-danger': menuActive == 'map' }">
-                            <i class="fa-solid fa-map"></i> SƠ ĐỒ
+                    <a href="#" @click="orderPaid">
+                        <li class="active" :class="{ 'bg-danger': menuActive == 'orderpaid' }">
+                            <i class="fa-solid fa-square-check"></i> ĐÃ TRẢ MÓN
                         </li>
                     </a>
-                    <a href="#" @click="clickBill">
-                        <li class="active" :class="{ 'bg-danger': menuActive == 'bill' }">
-                            <i class="fa-solid fa-money-bills"></i> HÓA ĐƠN
+                    <a href="#" @click="depot">
+                        <li class="active" :class="{ 'bg-danger': menuActive == 'depot' }">
+                            <i class="fa-solid fa-landmark"></i> QL. KHO
                         </li>
                     </a>
                 </ul>
             </div>
             <div class="col-md-6 col-12 d-flex justify-content-between">
-                <div class="w-100 d-flex align-items-end justify-content-between">
-                    <div>
-                        <a href="#" @click="orderListNew">
-                            <h6 class="m-0 active fw-bold p-2"
-                                style="background-color: rgba(188, 188, 188, 0.726); color:black;">
-                                Thông tin Order
-                            </h6>
-                        </a>
-                    </div>
+                <div class="w-100 d-flex align-items-end justify-content-end">
                     <div class="d-flex mb-2">
-                        <button class="btn btn-outline-warning mx-2 rounded-circle" @click="addOrder">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
                         <div class="dropdown">
                             <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                                 {{ username }}
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" @click="personnalInfor" href="#">Thông tin cá nhân</a>
+                                <li>
+                                    <a class="dropdown-item" @click="personnalInfor" href="#">Thông tin cá nhân</a>
                                 </li>
                                 <li><a class="dropdown-item" @click="workWeekInfor" href="#">Lịch làm việc</a></li>
                                 <li><a class="dropdown-item" @click="personnalInfor" href="#">Đăng kí ca làm</a>
@@ -66,30 +56,20 @@ import { ref } from 'vue';
 export default {
     emits: ['onChange'],
     setup(props, context) {
-        let menuActive = ref('dishlist');
+        let menuActive = ref('order');
 
-        function clickDishList() {
-            menuActive.value = 'dishlist';
-            sendEmit(menuActive.value);
-        }
-
-        function clickMap() {
-            menuActive.value = 'map';
-            sendEmit(menuActive.value);
-        }
-
-        function clickBill() {
-            menuActive.value = 'bill';
-            sendEmit(menuActive.value);
-        }
-
-        function addOrder() {
+        function order() {
             menuActive.value = 'order';
             sendEmit(menuActive.value);
         }
 
-        function orderListNew() {
-            menuActive.value = 'orderInfor';
+        function orderPaid() {
+            menuActive.value = 'orderpaid';
+            sendEmit(menuActive.value);
+        }
+
+        function depot() {
+            menuActive.value = 'depot';
             sendEmit(menuActive.value);
         }
 
@@ -108,13 +88,13 @@ export default {
         }
 
         return {
-            menuActive, clickDishList, clickBill, clickMap, addOrder, orderListNew, personnalInfor, workWeekInfor
+            menuActive, order, depot, orderPaid, personnalInfor, workWeekInfor
         };
     },
 
     data() {
         return {
-            username: this.$store.state.staff.tendangnhap,
+            username: 'thanhthuy'
         }
     },
 

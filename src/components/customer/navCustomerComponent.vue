@@ -2,7 +2,11 @@
     <div class="menu">
         <div class="row h-100 me-0">
             <div class="col-md-3 col-12 d-flex justify-content-end align-items-center">
-                <h3>Beach Restaurant</h3>
+                <h3>
+                    <a href="#home">
+                        Beach Restaurant
+                    </a>
+                </h3>
             </div>
             <div class="col-md-9 col-12 d-flex justify-content-end">
                 <ul class="h-100 d-flex align-items-center">
@@ -59,7 +63,7 @@ export default {
     background-color: rgba(21, 21, 21, 0.799);
 }
 
-h3 {
+h3>a {
     color: orange;
     font-style: italic;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif

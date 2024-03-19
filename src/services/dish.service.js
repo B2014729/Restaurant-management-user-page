@@ -34,21 +34,21 @@ class DishService {
         return (await this.api.get(`/menu`)).data.data;
     }
 
-    async AddDishOnMenu(idDish) {
-        return (await this.api.post(`/menu/add`, { idDish })).data;
-    }
+    // async AddDishOnMenu(idDish) {
+    //     return (await this.api.post(`/menu/add`, { idDish })).data;
+    // }
 
-    async DeleteOutMenu(idDish) {
-        return (await this.api.delete(`/menu/${idDish}`)).data;
-    }
+    // async DeleteOutMenu(idDish) {
+    //     return (await this.api.delete(`/menu/${idDish}`)).data;
+    // }
 
-    async GetLishDishSellALot() {
-        return (await this.api.get('/list-sell-a-lot')).data.data;
-    }
+    // async GetLishDishSellALot() {
+    //     return (await this.api.get('/list-sell-a-lot')).data.data;
+    // }
 
-    async GetStatisticalOnDishSell() {
-        return (await this.api.get('/statistical-dish-sell')).data.data;
-    }
+    // async GetStatisticalOnDishSell() {
+    //     return (await this.api.get('/statistical-dish-sell')).data.data;
+    // }
 }
 
 export default new DishService();

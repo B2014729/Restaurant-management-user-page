@@ -29,6 +29,9 @@ export default {
     props: {
         message: {
             type: String,
+        },
+        idTable: {
+            type: Number,
         }
     },
 
@@ -38,7 +41,7 @@ export default {
         }
 
         const onActive = () => {
-            context.emit("onActive");
+            context.emit("onActive", props.idTable);
         }
         return { closeModal, onActive };
     },

@@ -5,16 +5,15 @@
         <div class="input-group w-50">
             <span class="input-group-text fw-bold" id="status">Trạng thái:</span>
             <select class="form-select" aria-label="Default select example" v-model="data.status">
-                <option selected value="1">Bàn mới</option>
-                <option value="2">Thêm món</option>
+                <option selected value="0">Bàn mới</option>
+                <option value="1">Thêm món</option>
             </select>
         </div>
         <div class="input-group w-25">
             <span class="input-group-text fw-bold" id="idtable">Bàn số:</span>
             <select class="form-select" aria-label="Default select example" v-model="data.idTable">
-                <option selected value="10">10</option>
                 <option
-                    v-for="(item, index) in [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]"
+                    v-for="(item, index) in [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]"
                     :value="item" :key="index">
                     {{ item }}
                 </option>
@@ -44,27 +43,46 @@
                         <input class="w-75" type="number" v-model="item.soluong">
                     </td>
                     <td>{{ item.gia }}</td>
-                    <td><button class="btn"><i class="fa-solid fa-xmark text-danger"></i></button></td>
+                    <td>
+                        <button class="btn" @click="remove(item.idmon)">
+                            <i class="fa-solid fa-xmark text-danger"></i>
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
+        <span v-if="error" class="text-danger" style="font-size: 14px;">
+            Vui lòng chọn đầy đủ trạng thái và số bàn!
+        </span>
         <button class="btn btn-success" @click="order">Order</button>
     </div>
 </template>
 
 <script>
-
+import { ref } from 'vue';
 export default {
     props: {
         listDishOrder: {
             type: Array,
         }
     },
+    emits: ['removeDish', 'order'],
+
+    setup() {
+        let error = ref(false);
+
+        return { error };
+    },
 
     data() {
         return {
             data: {
-                status: '1',
+                status: '0',
+                idTable: '',
+                dishId: [],
+                quantity: [],
+                note: [],
+                token: 'This is the tokken',
             },
         };
     },
@@ -75,10 +93,21 @@ export default {
 
     methods: {
         order() {
-            console.log('call api Order');
-            console.log(this.data);
-            console.log(this.listDishOrder);
+            if (this.data.idTable == '') {
+                this.error = true;
+            } else {
+                this.error = false;
+                this.listDishOrder.forEach(element => {
+                    this.data.dishId.push(element.idmon);
+                    this.data.quantity.push(element.soluong);
+                    this.data.note.push("");
+                });
+                this.$emit('order', this.data);
+            }
+        },
 
+        remove(idDish) {
+            this.$emit('removeDish', idDish);
         }
     }
 }

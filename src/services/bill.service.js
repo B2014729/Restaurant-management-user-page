@@ -32,6 +32,22 @@ class BillService {
     async GetStatisticalWithMonthAndYear(month, year) {
         return (await this.api.get(`/statistical-in-month/${month}&${year}`)).data.data;
     }
+
+    async GetListBillUnpaid() { //Lay thong  tin hoa don cau ban dang con an => chua thanh toan
+        return (await this.api.get(`/table-list/`)).data.data;
+    }
+
+    async FindOneByIdTable(id) {
+        return (await this.api.get(`/table/${id}`)).data.data[0];
+    }
+
+    async FindAllByDate(date) {   //Lay danh sach hoa don trong 1 ngay (date = '2024-04-04')
+        return (await this.api.get(`/list/date/${date}`)).data.data;
+    }
+
+    async UpdateStatusPayment(idTable, idStaff) {
+        return (await this.api.put(`/table/${idTable}`, { idStaff })).data;
+    }
 }
 
 export default new BillService();
