@@ -93,7 +93,7 @@ export default {
 
     setup() {
         const formatNumber = (number) => {
-            return (new Intl.NumberFormat().format(number));
+            return (number.toLocaleString('vi-VN')) + 'đ';
         }
         return {
             formatNumber

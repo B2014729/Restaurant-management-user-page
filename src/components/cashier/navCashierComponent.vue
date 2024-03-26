@@ -46,9 +46,9 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" @click="personnalInfor" href="#">Thông tin cá nhân</a>
                                 </li>
-                                <li><a class="dropdown-item" @click="workWeekInfor" href="#">Lịch làm việc</a></li>
-                                <li><a class="dropdown-item" @click="personnalInfor" href="#">Đăng kí ca làm</a>
-                                </li>
+                                <router-link :to="{ name: 'calendrier-work-page' }">
+                                    <li><a class="dropdown-item" href="#">Lịch làm việc</a></li>
+                                </router-link>
                                 <li><a class="dropdown-item" @click="logout" href="#">Đăng xuất</a>
                                 </li>
                             </ul>
@@ -98,17 +98,12 @@ export default {
             sendEmit(menuActive.value);
         }
 
-        function workWeekInfor() {
-            menuActive.value = 'workWeek';
-            sendEmit(menuActive.value);
-        }
-
         function sendEmit(menuactive) {
             context.emit('onChange', menuactive);
         }
 
         return {
-            menuActive, clickDishList, clickBill, clickMap, addOrder, orderListNew, personnalInfor, workWeekInfor
+            menuActive, clickDishList, clickBill, clickMap, addOrder, orderListNew, personnalInfor,
         };
     },
 

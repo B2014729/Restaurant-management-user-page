@@ -17,12 +17,24 @@ class BillService {
         return (await this.api.get(`/arrange/${idPhase}`)).data.data[0];
     }
 
+    async FindAllIdCalendrierWithPhase(idPhase) {
+        return (await this.api.get(`/get-id-calendrier-in-phase/${idPhase}`)).data.data;
+    }
+
     async CreatePhase(startdate, enddate) {
         return (await this.api.post(`/phase/create`, { startdate, enddate })).data;
     }
 
     async CreateWorkCalendrier(data) {
         return (await this.api.post(`/arrange/create`, { workWeek: data })).data;
+    }
+
+    async RegisterWorkCalendrier(workWeek, idCalendrier, token) {
+        return (await this.api.post(`/register-work`, {
+            workWeek: workWeek,
+            idCalendrier: idCalendrier,
+            token: token,
+        })).data;
     }
 
     // async FindAll() {

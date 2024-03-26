@@ -9,19 +9,19 @@ const store = new Vuex.Store({
     getters: {
         staff: (state) => {
             return state.staff;
-        }
+        },
     },
 
     actions: {
         staff(context, user) {
-            context.commit('setUser', user);
-        }
+            context.commit('setStaff', user);
+        },
     },
 
     mutations: {
-        setUser(state, user) {
+        setStaff(state, user) {
             state.staff = user;
-        }
+        },
     }
 });
 

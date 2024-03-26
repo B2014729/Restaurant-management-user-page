@@ -30,14 +30,19 @@
                     </a>
                 </ul>
                 <div class="d-flex align-items-center ms-5">
-                    <button class="btn btn-outline-warning">
+                    <button class="btn btn-outline-warning me-2">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
-                    <button class="btn btn-outline-warning mx-2" @click="login">
-                        Login
-                    </button>
-                    <button class="btn btn-outline-warning" @click="register">
+                    <button v-if="!isLogin" class="btn btn-outline-warning" @click="register">
                         Register
+                    </button>
+                    <p v-else class="mt-3 px-2 text-warning">{{ $store.state.staff.tendangnhap }}</p>
+
+                    <button v-if="!isLogin" class="btn btn-warning mx-2" @click="login">
+                        <i class="fa-solid fa-right-to-bracket"></i>
+                    </button>
+                    <button v-else class="btn btn-outline-warning mx-2" @click="logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
                 </div>
             </div>
@@ -46,9 +51,19 @@
 </template>
 <script>
 export default {
+    props: {
+        isLogin: {
+            type: Boolean,
+        }
+    },
+
     methods: {
         login() {
             this.$emit('onLogin');
+        },
+
+        logout() {
+            this.$emit('onLogout');
         },
 
         register() {

@@ -3,7 +3,7 @@
         <div class="modal-booking-content">
             <div class="p-3 d-flex flex-column">
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn-close" @click="closeModal"></button>
+                    <button type="button" class="btn-close bg-secondary" @click="closeModal"></button>
                 </div>
                 <div class="mt-4">
                     <h4 class="mb-5">Register</h4>
@@ -36,7 +36,7 @@
                                     Password confirm
                                 </label>
                             </div>
-                            <div v-if="false" class="my-2 w-100 d-flex justify-content-end">
+                            <div v-if="errorNotifycation" class="my-2 w-100 d-flex justify-content-end">
                                 <span class="text-danger" style="font-size: 13px;">
                                     Please check registration information!
                                 </span>
@@ -62,14 +62,16 @@
     </div>
 </template>
 <script>
+import { ref } from 'vue';
 
 export default {
     setup(props, context) {
+        let errorNotifycation = ref(false);
         const closeModal = () => {
             context.emit("close");
         }
 
-        return { closeModal };
+        return { closeModal, errorNotifycation };
     },
 
     data() {
@@ -84,13 +86,19 @@ export default {
 
     methods: {
         submit() {
-            console.log(1);
-            this.$emit('submit', this.data);
+            if (!this.data.username || !this.data.password || !this.data.passwordConfirm
+                || (this.data.password !== this.data.passwordConfirm)) {
+                this.errorNotifycation = true;
+            } else {
+                this.errorNotifycation = false;
+                this.$emit('register', this.data);
+            }
+
         }
     }
 }
 </script>
-<style  scoped lang="css">
+<style scoped lang="css">
 .modalBooking {
     display: none;
     position: fixed;

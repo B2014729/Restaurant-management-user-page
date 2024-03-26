@@ -21,18 +21,24 @@ const routes = [
         path: '/nhan-vien/bep',
         name: 'kitchen-page',
         component: () => import('@/layouts/kitchenLayout.vue'),
-        // beforeEnter: (to, from, next) => {
-        //     if (!store.state.staff || (store.state.staff.quyentruycap != 3)) {
-        //         next('/');
-        //     }
-        //     next();
-        // }
+        beforeEnter: (to, from, next) => {
+            if (!store.state.staff || (store.state.staff.quyentruycap != 3)) {
+                next('/');
+            }
+            next();
+        }
     },
-    // {
-    //     path: '/nhan-vien/phuc-vu',
-    //     name: 'customer-page',
-    //     component: () => import('@/layouts/customerLayout.vue'),
-    // },
+    {
+        path: '/nhan-vien/lich-lam-viec',
+        name: 'calendrier-work-page',
+        component: () => import('@/layouts/calendrierWorkStaffLayout.vue'),
+        beforeEnter: (to, from, next) => {
+            if (!store.state.staff) {
+                next('/');
+            }
+            next();
+        }
+    },
     // {
     //     path: '/nhan-vien/bep',
     //     name: 'customer-page',

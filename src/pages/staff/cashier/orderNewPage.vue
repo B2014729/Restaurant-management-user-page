@@ -81,7 +81,7 @@ export default {
 
         await socket.on('newOrder', () => {
             this.fetchData();
-        })
+        });
     },
 
 
@@ -113,7 +113,7 @@ export default {
             }
 
         }
-    }
+    },
 }
 
 </script>

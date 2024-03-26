@@ -3,7 +3,7 @@
         <div class="modal-booking-content">
             <div class="p-3 d-flex flex-column">
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn-close" @click="closeModal"></button>
+                    <button type="button" class="btn-close bg-secondary" @click="closeModal"></button>
                 </div>
                 <div class="mt-4">
                     <h4 class="mb-5">Login</h4>
@@ -45,7 +45,7 @@
                             <div v-if="errorNotifycation" class="my-2 w-100 d-flex justify-content-end">
                                 <span class="text-danger" style="font-size: 13px;">
                                     <i class="fa-solid fa-triangle-exclamation text-danger"></i>
-                                    Vui lòng kiểm tra thông tin đăng nhập!
+                                    Please check your login information!
                                 </span>
                             </div>
                             <div class="d-grid">
