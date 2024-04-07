@@ -34,12 +34,16 @@
                             </button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item" @click="personnalInfor" href="#">Thông tin cá nhân</a>
+                                    <a class="dropdown-item" @click="personnalInfor" href="#">
+                                        <i class="fa-solid fa-user"></i> Cá nhân</a>
                                 </li>
                                 <router-link :to="{ name: 'calendrier-work-page' }">
-                                    <li><a class="dropdown-item" href="#">Lịch làm việc</a></li>
+                                    <li><a class="dropdown-item" href="#">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                            Lịch làm việc</a></li>
                                 </router-link>
-                                <li><a class="dropdown-item" @click="logout" href="#">Đăng xuất</a>
+                                <li><a class="dropdown-item" @click="logout" href="#">
+                                        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
                                 </li>
                             </ul>
                         </div>

@@ -8,17 +8,19 @@
                 </div>
                 <div class="mt-4" style="min-height: 510px;">
                     <div class="d-flex justify-content-center">
-                        <form class="w-100" @submit.prevent="{ }">
+                        <form class="w-100" @submit.prevent="{ }" enctype="multipart/form-data">
                             <div class="row">
                                 <div class="col-md-4 col-12">
                                     <div class="d-flex justify-content-center">
-                                        <img src="https://image.phunuonline.com.vn/fckeditor/upload/2022/20220815/images/4176_3-2.jpg"
-                                            alt="" class="w-75 rounded-4">
+                                        <img :src="data.hinhanh" alt="Avatar" class="w-75 rounded-4">
                                     </div>
                                     <div class="d-flex justify-content-center form-floating my-2">
-                                        <input class=" w-75 form-control" id="avatar" type="file" @change="previewFiles"
-                                            ref="image">
-                                        <label for="avatar" style="margin-left:35px;">Thêm avatar:</label>
+                                        <input class="w-75 form-control" id="avatar" type="file" @change="previewFiles"
+                                            ref="avatar">
+                                        <label for="avatar" style="margin-left:5px;">Thêm avatar:</label>
+                                        <button class="btn btn-outline-success h-50 ms-2 mt-3" @click="onUpdateAvatar">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-8 col-12">
@@ -89,7 +91,7 @@
                                                         value="datadata" disabled="disabled">
                                                     <label for="password">*Mật khẩu: </label>
                                                 </div>
-                                                <button class="btn btn-outline-secondary ms-3">
+                                                <button class="btn btn-outline-secondary ms-3" @click="changePass">
                                                     <i class="fa-solid fa-pencil"></i>
                                                 </button>
                                             </div>
@@ -101,8 +103,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                <span v-if="errorNotifycation" class="text-end text-warning" style="font-size: 14px;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                    Vui lòng nhập đầy đủ thông tin cá nhân!
+                                </span>
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-success ms-3" style="width: 150px;">
+                                    <button type="submit" class="btn btn-success ms-3" @click="submit"
+                                        style="width: 150px;">
                                         Lưu thay đổi
                                     </button>
                                 </div>
@@ -116,23 +123,25 @@
 </template>
 
 <script>
-import staffServive from '@/services/staff.servive';
-
+import { ref } from 'vue';
+import staffService from '@/services/staff.service';
 
 export default {
     setup(props, context) {
+        let errorNotifycation = ref(false);
         const closeModal = () => {
             context.emit("close");
         }
 
         return {
-            closeModal,
+            closeModal, errorNotifycation
         };
     },
 
     data() {
         return {
             data: {},
+            fileSelect: null,
         };
     },
 
@@ -141,8 +150,61 @@ export default {
     },
 
     methods: {
+        previewFiles(event) {
+            this.fileSelect = event.target.files[0];
+        },
+
         async fetchData() {
-            this.data = await staffServive.FindOneByToken(this.$store.state.staff.token);
+            this.data = await staffService.FindOneByToken(this.$store.state.staff.token);
+        },
+
+        async onUpdateAvatar() {
+            const fd = new FormData();
+            fd.append('avatar', this.fileSelect);
+
+            try {
+                let result = await staffService.UploadAvatar(this.$store.state.staff.token, fd);
+                if (result.statusCode == 200) {
+                    await this.fetchData();
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        },
+
+        async submit() {
+            //Check info staff is full 
+            if (!this.data.hoten || !this.data.ngaysinh || !this.data.cccd
+                || !this.data.sodienthoai || !this.data.ngaythamgia || !this.data.diachi) {
+                this.errorNotifycation = true;
+            } else {
+                this.errorNotifycation = false;
+                try {
+                    let dataUpdate = {
+                        fullname: this.data.hoten,
+                        dateofbirth: this.data.ngaysinh,
+                        gender: this.data.gioitinh,
+                        idnumber: this.data.cccd,
+                        phone: this.data.sodienthoai,
+                        idposition: this.data.idchucvu,
+                        datestart: this.data.ngaythamgia,
+                        status: this.data.trangthai,
+                        idsalary: this.data.idluong,
+                        address: this.data.diachi,
+                    }
+                    await staffService.Update(this.$store.state.staff.token, dataUpdate).then(result => {
+                        if (result.statusCode == 200) {
+                            this.$emit('UpdateSuccess');
+                        }
+                    });
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        },
+
+        changePass() {
+            this.$emit('changePass');
         }
     }
 }

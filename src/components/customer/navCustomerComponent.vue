@@ -25,7 +25,7 @@
                     <a href="#location">
                         <li>LOCATION</li>
                     </a>
-                    <a href="#reservation">
+                    <a href="#order">
                         <li>ORDER NOW</li>
                     </a>
                 </ul>

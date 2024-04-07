@@ -13,6 +13,13 @@ class AccountService {
         return (await this.api.post('/customer-register', data)).data;
     }
 
+    async CheckPass(token, password) {
+        return (await this.api.post(`/check-pass/${token}`, { password })).data;
+    }
+
+    async Update(token, dataUpdate) {
+        return (await this.api.put(`/${token}`, dataUpdate)).data;
+    }
 }
 
 export default new AccountService();

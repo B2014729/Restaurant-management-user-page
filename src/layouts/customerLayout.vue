@@ -17,7 +17,6 @@
         <createEvaluateModal v-if="modalCreateEval" @close="toggleModalCreateEval" @send="sendEvaluate($event)">
         </createEvaluateModal>
 
-
         <navCustomerComponent :isLogin="isLogin" class="menu-parent" @onLogin="toggleModalLogin"
             @onRegister="toggleModalRegister" @onLogout="toggleModalConfirmLogout">
         </navCustomerComponent>
@@ -26,7 +25,8 @@
         <aboutPage id="about"></aboutPage>
         <openInforPage></openInforPage>
         <menuPage id="menu"></menuPage>
-        <orderPage id="reservation" @onLogin="toggleModalLogin" :isLogin="isLogin"></orderPage>
+        <orderPage id="order" @onLogin="toggleModalLogin" :isLogin="isLogin" @onStatusOrder="onAlertMessage($event)">
+        </orderPage>
         <listBookingsPage v-if="isLogin" @show="toggleModalShowEval" @create="toggleModalCreateEval"></listBookingsPage>
         <div id="location">
             <iframe
@@ -54,7 +54,9 @@
 
 <script>
 import { ref } from 'vue';
+
 import navCustomerComponent from '@/components/customer/navCustomerComponent.vue';
+
 import homePage from "@/pages/customer/homePage.vue";
 import aboutPage from "@/pages/customer/aboutPage.vue";
 import openInforPage from "@/pages/customer/openInforPage.vue";
@@ -202,7 +204,7 @@ export default {
             } catch (error) {
                 console.log(error);
             }
-        }
+        },
     }
 }
 

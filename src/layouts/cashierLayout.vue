@@ -1,11 +1,16 @@
 <template>
     <div>
-        <detailPersonnalModal v-if="modalActivePersonnal" @close="toggleModalPersonnal"></detailPersonnalModal>
-        <calendierWorkStaffModal v-if="modalActiveWorkWeek" @close="toggleModalWorkWeek">
-        </calendierWorkStaffModal>
+        <detailPersonnalModal v-if="modalActivePersonnal" @close="toggleModalPersonnal"
+            @changePass="toggleModalChangePass" @UpdateSuccess="UpdateSuccess">
+        </detailPersonnalModal>
+        <changePassModal v-if="modalActiveChangePass" @close="toggleModalChangePass" @onActive="changePass($event)">
+        </changePassModal>
 
         <navCashierComponent @onChange="onChange($event)" @logout="logout">
         </navCashierComponent>
+
+        <alertMessage v-if="showAlert" :status="status" :message="messageAlert"></alertMessage>
+
         <div class="row">
             <div class="col-md-6 col-12">
                 <listDishPage v-if="dishList" @addDish="addProductInOrder($event)"></listDishPage>
@@ -24,6 +29,9 @@
 
 <script>
 import { ref } from 'vue';
+
+import alertMessage from '@/components/alertMessage/alertMessage.vue';
+
 import navCashierComponent from '@/components/cashier/navCashierComponent.vue';
 import listDishPage from '@/pages/staff/cashier/listDishPage.vue';
 import mapPage from '@/pages/staff/cashier/mapPage.vue';
@@ -33,12 +41,14 @@ import orderNewPage from '@/pages/staff/cashier/orderNewPage.vue';
 import orderCreatePage from '@/pages/staff/cashier/orderCreatePage.vue';
 
 import detailPersonnalModal from '@/components/modals/detailPersonnalModal.vue';
-import calendierWorkStaffModal from '@/components/modals/calendierWorkStaffModal.vue';
+import changePassModal from '@/components/modals/changePassModal.vue';
 
 import orderService from '@/services/order.service';
+import accountService from '@/services/account.service';
 
 export default {
     components: {
+        alertMessage,
         navCashierComponent,
         orderNewPage,
         orderCreatePage,
@@ -46,7 +56,7 @@ export default {
         mapPage,
         billPage,
         detailPersonnalModal,
-        calendierWorkStaffModal,
+        changePassModal,
     },
 
     setup() {
@@ -89,10 +99,6 @@ export default {
                     dishList.value = true;
                     toggleModalPersonnal();
                     break;
-                case 'workWeek':
-                    dishList.value = true;
-                    toggleModalWorkWeek();
-                    break;
                 default:
                     break;
             }
@@ -100,16 +106,17 @@ export default {
 
         // Quan li modal thong tin ca nhan
         let modalActivePersonnal = ref(false);
+        // Quan li modal cap nhat thong tin tai khoan
+        let modalActiveChangePass = ref(false);
 
         const toggleModalPersonnal = () => {
             modalActivePersonnal.value = !modalActivePersonnal.value;
+            modalActiveChangePass.value = false;
         }
 
-        // Quan li modal lich lam viec
-        let modalActiveWorkWeek = ref(false);
-
-        const toggleModalWorkWeek = () => {
-            modalActiveWorkWeek.value = !modalActiveWorkWeek.value;
+        const toggleModalChangePass = () => {
+            modalActivePersonnal.value = false;
+            modalActiveChangePass.value = !modalActiveChangePass.value;
         }
 
         //Luu danh sach san pham order
@@ -144,10 +151,15 @@ export default {
             });
         }
 
+        let showAlert = ref(false);
+        let status = ref('');
+        let messageAlert = ref('');
+
         return {
             dishList, map, bill, listDish, orderListNew, createOrder, onChange,
             addProductInOrder, removeDish,
-            modalActivePersonnal, toggleModalPersonnal, modalActiveWorkWeek, toggleModalWorkWeek,
+            modalActivePersonnal, toggleModalPersonnal, modalActiveChangePass, toggleModalChangePass,
+            showAlert, status, messageAlert,
         };
     },
 
@@ -161,12 +173,16 @@ export default {
                 quantity: data.quantity,
                 note: data.note,
             }
-            await orderService.Create(dataFormated).then((result) => {
-                if (result.statusCode == 200) {
-                    //Thong  bao order thanh cong
-                    this.listDish = [];
-                }
-            })
+            try {
+                await orderService.Create(dataFormated).then((result) => {
+                    if (result.statusCode == 200) {
+                        //Thong  bao order thanh cong
+                        this.listDish = [];
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+            }
         },
 
         logout() {
@@ -174,6 +190,42 @@ export default {
             this.$store.dispatch('staff', null);
             this.$router.push('/');
         },
+
+        async changePass(data) {
+            this.modalActiveChangePass = false;
+            try {
+                await accountService.Update(data.token, data).then(result => {
+                    if (result.statusCode == 200) {
+                        this.showAlert = true;
+                        this.messageAlert = 'Đã cập nhật thông tin tài khoản!';
+                        this.status = 'success';
+                        setTimeout(() => {
+                            this.showAlert = false;
+                        }, 2500);
+
+                    }
+                })
+            } catch (error) {
+                console.log(error);
+                this.showAlert = true;
+                this.messageAlert = 'Lỗi khi cập nhật thông tin tài khoản!';
+                this.status = 'danger';
+                setTimeout(() => {
+                    this.showAlert = false;
+                }, 2500);
+            }
+        },
+
+        UpdateSuccess() {
+            this.modalActivePersonnal = false;
+
+            this.showAlert = true;
+            this.messageAlert = 'Đã cập nhật thông tin cá nhân!';
+            this.status = 'success';
+            setTimeout(() => {
+                this.showAlert = false;
+            }, 2500);
+        }
     }
 }
 </script>

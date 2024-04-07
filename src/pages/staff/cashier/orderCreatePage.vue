@@ -82,7 +82,7 @@ export default {
                 dishId: [],
                 quantity: [],
                 note: [],
-                token: 'This is the tokken',
+                token: '',
             },
         };
     },
@@ -96,6 +96,7 @@ export default {
             if (this.data.idTable == '') {
                 this.error = true;
             } else {
+                this.data.token = this.$store.state.staff.token;
                 this.error = false;
                 this.listDishOrder.forEach(element => {
                     this.data.dishId.push(element.idmon);

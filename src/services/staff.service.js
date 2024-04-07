@@ -17,12 +17,28 @@ class StaffService {
         return (await this.api.get(`/list`)).data.data;
     }
 
+    async Create(data) {
+        return (await this.api.post(`/create`, data)).data;
+    }
+
+    async Update(id, dataUpdate) {
+        return (await this.api.put(`/${id}`, dataUpdate)).data;
+    }
+
     async Salary(idPhase) {
         return (await this.api.get(`/salary/${idPhase}`)).data.data;
     }
 
     async SalaryDetail(idStaff, idPhase) {
         return (await this.api.get(`/salary/${idStaff}/calendrier/${idPhase}`)).data.data;
+    }
+
+    async UploadAvatar(token, data) {
+        return (await this.api.post(`/upload-avatar/${token}`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        })).data;
     }
 }
 

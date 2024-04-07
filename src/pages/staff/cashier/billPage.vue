@@ -146,6 +146,10 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+
+        serach() {
+            console.log(this.searchText);
         }
     }
 }

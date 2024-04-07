@@ -2,7 +2,11 @@
     <div>
         <detailOrderModal v-if="modalActive" @close="toggleModal(0)" :idOrder="idOrder" @onActive="onSend">
         </detailOrderModal>
-        <p class="text-success pt-3 m-0 fs-5 fw-bold">Order gần đây</p>
+        <div class="d-flex">
+            <p class="text-success pt-3 ps-1 m-0 fs-5 fw-bold">Order gần đây</p>
+            <alertMessage style="right: -660px; top: 80px" v-if="showAlert" :status="status" :message="messageAlert">
+            </alertMessage>
+        </div>
         <table class="table table-striped table-hover mx-1">
             <thead>
                 <tr>
@@ -38,12 +42,18 @@ import { io } from "socket.io-client";
 import { ref } from 'vue';
 
 import detailOrderModal from "@/components/modals/detailOrderModal.vue";
+import alertMessage from '@/components/alertMessage/alertMessage.vue';
 export default {
     components: {
-        detailOrderModal
+        detailOrderModal, alertMessage,
     },
 
     setup() {
+        //Quan li alert meesage
+        let showAlert = ref(false);
+        let status = ref('');
+        let messageAlert = ref('');
+
         let modalActive = ref(false);
         let idOrder = ref(0);
 
@@ -65,7 +75,7 @@ export default {
         }
 
         return {
-            formatDateTime, toggleModal, idOrder, modalActive
+            formatDateTime, toggleModal, idOrder, modalActive, showAlert, status, messageAlert,
         }
     },
 
@@ -101,6 +111,12 @@ export default {
                 await orderService.SendToKitchen(this.idOrder).then((result) => {
                     if (result.statusCode == 200) {
                         this.modalActive = false;
+                        this.showAlert = true;
+                        this.messageAlert = 'Đã order với bếp';
+                        setTimeout(() => {
+                            this.showAlert = false;
+                        }, 2500);
+                        this.status = 'success';
                         if (this.listOrder.length > 1) {
                             this.fetchData();
                         } else {
@@ -109,6 +125,12 @@ export default {
                     }
                 });
             } catch (error) {
+                this.showAlert = true;
+                this.messageAlert = 'Lỗi khi order với bếp';
+                setTimeout(() => {
+                    this.showAlert = false;
+                }, 2500);
+                this.status = 'danger';
                 console.log(error);
             }
 
