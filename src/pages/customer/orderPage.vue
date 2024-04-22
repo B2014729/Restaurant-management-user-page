@@ -1,6 +1,6 @@
 <template>
     <div>
-        <alertMessage style="margin-top: 180px;" v-if="showAlert" :status="status" :message="messageAlert">
+        <alertMessage style="margin-top: 220px;" v-if="showAlert" :status="status" :message="messageAlert">
         </alertMessage>
 
         <confirmPayment v-if="modalConfirm" :message="messageModalConfirm" @close="toggleModal" @onActive="submit">
@@ -147,6 +147,8 @@ export default {
                                 this.showAlert = false;
                             }, 2500);
                             this.status = 'success';
+                            this.data = {};
+
                         } else {
                             this.showAlert = true;
                             this.messageAlert = 'Error when booking your table';

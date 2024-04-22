@@ -24,22 +24,35 @@
                                 <thead>
                                     <tr>
                                         <th scope="col" style="width: 20px;">STT</th>
+                                        <th scope="col" style="width: 100px;">Mã số</th>
                                         <th scope="col">Tên món</th>
                                         <th scope="col" style="width: 100px;">Số lượng</th>
                                         <th scope="col">Đơn giá (vnd)</th>
+                                        <th scope="col">Giảm giá (vnd)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr v-for="(item, index) in listDish" :key="index">
                                         <th scope="row">{{ index + 1 }}</th>
-                                        <td>{{ item.mon.tenmon }}</td>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.tenmon }}</td>
                                         <td>{{ item.soluong }}</td>
-                                        <td>{{ formatNumber(item.mon.gia) }}</td>
+                                        <td>{{ formatNumber(item.gia + item.giamgia) }}</td>
+                                        <td>{{ formatNumber(item.giamgia) }}</td>
+                                    </tr>
+                                    <hr>
+                                    <tr>
+                                        <td colspan="4" class="fw-bold text-end bg-warning">Tổng:</td>
+                                        <td class="fw-bold">
+                                            {{ formatNumber(billInfor.thanhtoan + billInfor.giamgia) }} vnđ
+                                        </td>
+                                        <td class="fw-bold">{{ formatNumber(billInfor.giamgia) }} vnđ</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3" class="fw-bold text-end bg-warning">Tổng cộng</td>
-                                        <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }}</td>
+                                        <td colspan="4" class="fw-bold text-end bg-success">Thanh toán:</td>
+                                        <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }} vnđ</td>
                                     </tr>
+
                                 </tbody>
                             </table>
                         </div>
@@ -69,6 +82,9 @@ export default {
         }
 
         function formatDateTime(date) {
+            if (!date) {
+                return '____';
+            }
             let newDate = new Date(date);
             let hours = newDate.getHours() >= 10 ? newDate.getHours() : `0${newDate.getHours()}`;
             let minutes = newDate.getMinutes() >= 10 ? newDate.getMinutes() : `0${newDate.getMinutes()}`;
@@ -107,7 +123,24 @@ export default {
         async fetchData() {
             try {
                 this.billInfor = await billService.FindOneByIdTable(this.idTable);
-                this.listDish = this.billInfor.chitietdatmon;
+                let dish = {};
+                this.billInfor.chitietdatmon.forEach(element => {
+                    if (Object.keys(element.khuyenmai).length == 0) {
+                        dish = element.mon;
+                        dish.id = element.mon.idmon;
+                        dish.soluong = element.soluong;
+                        dish.giamgia = 0;
+                        this.listDish.push(dish);
+                    } else {
+                        this.listDish.push({
+                            id: element.khuyenmai.idkhuyenmai,
+                            tenmon: element.khuyenmai.tenkhuyenmai,
+                            soluong: element.soluong,
+                            giamgia: element.khuyenmai.giamgia,
+                            gia: element.khuyenmai.thanhtoan,
+                        })
+                    }
+                });
 
             } catch (error) {
                 this.billInfor = {};

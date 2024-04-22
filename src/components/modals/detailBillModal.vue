@@ -21,7 +21,7 @@
                         <h6 class="fw-bold text-warning">Danh sách món đã dùng</h6>
                         <div>
                             <table class="table table-bordered table-hover">
-                                <thead>
+                                <!-- <thead>
                                     <tr>
                                         <th scope="col" style="width: 20px;">STT</th>
                                         <th scope="col">Tên món</th>
@@ -32,12 +32,41 @@
                                 <tbody>
                                     <tr v-for="(item, index) in billInfor.chitietdatmon" :key="index">
                                         <th scope="row">{{ index + 1 }}</th>
-                                        <td>{{ item.mon.tenmon }}</td>
+                                        <td>{{ item.tenmon }}</td>
                                         <td>{{ item.soluong }}</td>
-                                        <td>{{ formatNumber(item.mon.gia) }}</td>
+                                        <td>{{ formatNumber(item.gia) }}</td>
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="fw-bold text-end bg-warning">Tổng cộng</td>
+                                        <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }}</td>
+                                    </tr>
+                                </tbody> -->
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 20px;">STT</th>
+                                        <th scope="col" style="width: 100px;">Mã số</th>
+                                        <th scope="col">Tên món</th>
+                                        <th scope="col" style="width: 100px;">Số lượng</th>
+                                        <th scope="col">Đơn giá (vnd)</th>
+                                        <th scope="col">Giảm giá (vnd)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(item, index) in listDish" :key="index">
+                                        <th scope="row">{{ index + 1 }}</th>
+                                        <td>{{ item.id }}</td>
+                                        <td>{{ item.tenmon }}</td>
+                                        <td>{{ item.soluong }}</td>
+                                        <td>{{ formatNumber(item.gia) }}</td>
+                                        <td>{{ formatNumber(item.giamgia) }}</td>
+                                    </tr>
+                                    <hr>
+                                    <tr>
+                                        <td colspan="5" class="fw-bold text-end bg-warning">Giảm: </td>
+                                        <td class="fw-bold">{{ formatNumber(billInfor.giamgia) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="5" class="fw-bold text-end bg-success">Tổng cộng:</td>
                                         <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }}</td>
                                     </tr>
                                 </tbody>
@@ -46,7 +75,7 @@
                         <div class="d-flex justify-content-end">
                             <div class="input-group input-group-sm mb-3" style="width: 46%;">
                                 <span class="input-group-text fw-bold" id="inputGroup-sizing-sm">
-                                    Chiết khấu (%):</span>
+                                    Chiết khấu combo (%):</span>
                                 <input type="number" class="form-control" aria-label="Sizing example input"
                                     aria-describedby="inputGroup-sizing-sm" v-model="reduced">
                             </div>
@@ -56,7 +85,7 @@
                                 <span class=" input-group-text fw-bold" id="inputGroup-sizing-sm"
                                     style="font-size: 16px;">
                                     Thanh toán :
-                                    {{ formatNumber(billInfor.thanhtoan - ((billInfor.thanhtoan) * reduced) / 100) }}
+                                    {{ formatNumber(billInfor.thanhtoan) }}
                                     vnd
                                 </span>
                             </div>
@@ -113,6 +142,7 @@ export default {
         return {
             reduced: 0,
             billInfor: {},
+            listDish: [],
         };
     },
 
@@ -124,6 +154,25 @@ export default {
         async fetchData() {
             try {
                 this.billInfor = await billService.FindOneById(this.idBill);
+                let dish = {};
+                this.billInfor.chitietdatmon.forEach(element => {
+                    if (Object.keys(element.khuyenmai).length == 0) {
+                        dish = element.mon;
+                        dish.id = element.mon.idmon;
+                        dish.soluong = element.soluong;
+                        dish.giamgia = 0;
+                        this.listDish.push(dish);
+                    } else {
+                        this.reduced = element.khuyenmai.giatrikhuyenmai
+                        this.listDish.push({
+                            id: element.khuyenmai.idkhuyenmai,
+                            tenmon: element.khuyenmai.tenkhuyenmai,
+                            soluong: element.soluong,
+                            giamgia: element.khuyenmai.giamgia,
+                            gia: element.khuyenmai.thanhtoan,
+                        })
+                    }
+                });
             } catch (error) {
                 console.log(error);
             }

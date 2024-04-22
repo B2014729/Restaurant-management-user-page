@@ -25,9 +25,11 @@
         <aboutPage id="about"></aboutPage>
         <openInforPage></openInforPage>
         <menuPage id="menu"></menuPage>
-        <orderPage id="order" @onLogin="toggleModalLogin" :isLogin="isLogin" @onStatusOrder="onAlertMessage($event)">
+        <orderPage id="order" @onLogin="toggleModalLogin" :isLogin="isLogin">
         </orderPage>
-        <listBookingsPage v-if="isLogin" @show="toggleModalShowEval" @create="toggleModalCreateEval"></listBookingsPage>
+        <listBookingsPage v-if="isLogin" @show="toggleModalShowEval" @create="toggleModalCreateEval"
+            :listbookings="listBooking">
+        </listBookingsPage>
         <div id="location">
             <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62860.63879223682!2d105.75757034999998!3d10.034186950000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0629f6de3edb7%3A0x527f09dbfb20b659!2zQ-G6p24gVGjGoSwgTmluaCBLaeG7gXUsIEPhuqduIFRoxqEsIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1709003116908!5m2!1svi!2s"
@@ -72,6 +74,7 @@ import confirmPayment from '@/components/modals/confirmPayment.vue';
 
 import accountService from '@/services/account.service';
 import evaluateService from '@/services/evaluate.service';
+
 export default {
     name: 'App',
     components: {
@@ -126,41 +129,45 @@ export default {
         };
     },
 
-    created() {
+    data() {
+        return {
+            listBooking: [''],
+        };
+    },
+
+    async created() {
         if (this.$store.state.staff != null) {
             this.isLogin = true;
         }
     },
 
-
     methods: {
         async login(data) {
             try {
-                await accountService.Login(data).then((result) => {
-                    if (result.status == 200) {
-                        this.isLogin = true;
-                        this.$cookies.set('jwt', result.headers.authorization);
-                        this.$store.dispatch('staff',
-                            {
-                                token: result.headers.authorization,
-                                tendangnhap: result.data.data[0].tendangnhap,
-                                quyentruycap: result.data.data[0].quyen,
-                            });
-                        // console.log(this.$store.state.staff);
-                        if (result.data.data[0].quyen == 1) {
-                            this.$router.push('/nhan-vien/thu-ngan');
-                        }
-                        else if (result.data.data[0].quyen == 3) {
-                            this.$router.push('/nhan-vien/bep');
-                        }
-                        else if (result.data.data[0].quyen == 10) {
-                            this.$router.push('/');
-                            this.modalLoginActive = false;
-                        } else {
-                            throw '';//Gay phat sinh loi neu khong thay tai khoan dang nhap phu hop
-                        }
+                let result = await accountService.Login(data);
+                if (result.status == 200) {
+                    this.isLogin = true;
+                    this.$cookies.set('jwt', result.headers.authorization);
+                    this.$store.dispatch('staff',
+                        {
+                            token: result.headers.authorization,
+                            tendangnhap: result.data.data[0].tendangnhap,
+                            quyentruycap: result.data.data[0].quyen,
+                        });
+                    // console.log(this.$store.state.staff);
+                    if (result.data.data[0].quyen == 1) {
+                        this.$router.push('/nhan-vien/thu-ngan');
                     }
-                });
+                    else if (result.data.data[0].quyen == 3) {
+                        this.$router.push('/nhan-vien/bep');
+                    }
+                    else if (result.data.data[0].quyen == 10) {
+                        this.$router.push('/');
+                        this.modalLoginActive = false;
+                    } else {
+                        throw '';//Gay phat sinh loi neu khong thay tai khoan dang nhap phu hop
+                    }
+                }
             } catch (error) {
                 this.message = 'Login information is incorrect!';
                 this.errorMessage = true;

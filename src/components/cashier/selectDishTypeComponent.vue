@@ -6,6 +6,7 @@
       <div class="col-md-6 col-12 d-flex justify-content-end">
          <h6 class="text-dark mt-2 me-2">Danh mục món:</h6>
          <select @change="submit()" class="form-select w-50" aria-label="Default select example" v-model="idType">
+            <option value="100">Combo khuyến mãi</option>
             <option value="0">Tất cả</option>
             <option value="2">Nước ngọt</option>
             <option value="3">Bia</option>

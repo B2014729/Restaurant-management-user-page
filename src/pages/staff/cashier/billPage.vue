@@ -143,6 +143,7 @@ export default {
             try {
                 let date = new Date();
                 this.billList = await billService.FindAllByDate(date);
+                console.log(this.billList);
             } catch (error) {
                 console.log(error);
             }

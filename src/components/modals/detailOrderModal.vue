@@ -22,7 +22,7 @@
                                 <tbody>
                                     <tr v-for="(item, index) in listDish" :key="index">
                                         <th scope="row">{{ index + 1 }}</th>
-                                        <td>{{ item.mon.tenmon }}</td>
+                                        <td>{{ item.tenmon }}</td>
                                         <td>{{ item.soluong }}</td>
                                         <td>{{ item.ghichu }}</td>
                                     </tr>
@@ -81,7 +81,19 @@ export default {
         async fetchData() {
             try {
                 this.billInfor = await orderService.FindOneById(this.idOrder);
-                this.listDish = this.billInfor.thongtinchitiet;
+                let dish = {};
+                this.billInfor.thongtinchitiet.forEach(element => {
+                    if (!Object.prototype.hasOwnProperty.call(element, 'khuyenmai')) {
+                        dish = element.mon;
+                        dish.soluong = element.soluong
+                        this.listDish.push(dish);
+                    } else {
+                        element.chitiet.forEach(e => {
+                            e.soluong = e.soluong * element.soluong;
+                            this.listDish.push(e);
+                        })
+                    }
+                });
             } catch (error) {
                 this.billInfor = {};
                 console.log(error);

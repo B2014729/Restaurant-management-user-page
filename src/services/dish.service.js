@@ -29,7 +29,7 @@ class DishService {
         return (await this.api.delete(`/${id}`)).data;
     }
 
-    //Menu manager
+    // Menu management
     async GetMenu() {
         return (await this.api.get(`/menu`)).data.data;
     }

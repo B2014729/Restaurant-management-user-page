@@ -5,23 +5,25 @@
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th scope="col" style="width: 20px;">STT</th>
-                    <th scope="col">Mã order</th>
-                    <th scope="col">Mã món</th>
-                    <th scope="col">Tên món</th>
-                    <th scope="col">Số lượng</th>
-                    <th scope="col">Thời gian</th>
-                    <th scope="col" style="width: 80px;">Trạng thái</th>
+                    <th class="bg-secondary" scope="col" style="width: 20px;">STT</th>
+                    <th class="bg-secondary" scope="col">Mã order</th>
+                    <th class="bg-secondary" scope="col">Bàn</th>
+                    <th class="bg-secondary" scope="col">Mã món</th>
+                    <th class="bg-secondary" scope="col">Tên món</th>
+                    <th class="bg-secondary" scope="col">Số lượng</th>
+                    <th class="bg-secondary" scope="col">Thời gian</th>
+                    <th class="bg-secondary" scope="col" style="width: 80px;">Trạng thái</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in searchDish" :key="index">
                     <th scope="row">{{ index + 1 }}</th>
                     <td style="width: 90px;">{{ item.iddatmon }}</td>
-                    <td style="width: 90px;">{{ item.mon.idmon }}</td>
-                    <td style="width: 250px;">{{ item.mon.tenmon }}</td>
+                    <td style="width: 70px;">{{ item.idban }}</td>
+                    <td style="width: 70px;">{{ item.idmon }}</td>
+                    <td style="width: 250px;">{{ item.tenmon }}</td>
                     <td style="width: 90px;">{{ item.soluong }}</td>
-                    <td style="width: 200px;">{{ formatTime(item.thoigiantra) }}</td>
+                    <td style="width: 140px;">{{ formatTime(item.thoigiantra) }}</td>
                     <td>
                         <span class="text-success">Đã trả món</span>
                     </td>
@@ -66,8 +68,7 @@ export default {
     computed: {
         listDishString() {
             return this.listDish.map((dish) => {
-                const { idmon, tenmon, } = dish.mon;
-                const { iddatmon } = dish;
+                const { idmon, tenmon, iddatmon } = dish;
                 return [iddatmon, idmon, tenmon].join("");
             });
         },
@@ -97,7 +98,27 @@ export default {
     methods: {
         async fetchData() {
             try {
-                this.listDish = await orderService.FindAllDishPaidInDate(this.time);
+                let resultFetch = await orderService.FindAllDishPaidInDate(this.time);
+                resultFetch.forEach(element => {
+                    if (!Object.prototype.hasOwnProperty.call(element, 'khuyenmai')) {
+                        let dish = {}
+                        dish = element.mon;
+                        dish.idban = element.idban;
+                        dish.soluong = element.soluong;
+                        dish.iddatmon = element.iddatmon;
+                        dish.thoigiantra = element.thoigiantra;
+                        this.listDish.push(dish);
+                    } else {
+                        element.khuyenmai.chitiet.forEach(item => {
+                            item.soluong = item.soluong * element.soluong;
+                            item.idmon = element.khuyenmai.thongtinkhuyenmai.idkhuyenmai;
+                            item.idban = element.idban;
+                            item.iddatmon = element.iddatmon;
+                            item.thoigiantra = element.thoigiantra;
+                            this.listDish.push(item);
+                        });
+                    }
+                });
             } catch (error) {
                 console.log(error);
             }

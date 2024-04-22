@@ -42,7 +42,7 @@
                     <td>
                         <input class="w-75" type="number" v-model="item.soluong">
                     </td>
-                    <td>{{ item.gia }}</td>
+                    <td>{{ formatNumber(item.gia) }}</td>
                     <td>
                         <button class="btn" @click="remove(item.idmon)">
                             <i class="fa-solid fa-xmark text-danger"></i>
@@ -71,7 +71,11 @@ export default {
     setup() {
         let error = ref(false);
 
-        return { error };
+        const formatNumber = (number) => {
+            return (new Intl.NumberFormat().format(number))
+        }
+
+        return { error, formatNumber };
     },
 
     data() {

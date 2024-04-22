@@ -3,6 +3,9 @@
         <detailPersonnalModal v-if="modalActivePersonnal" @close="toggleModalPersonnal"
             @changePass="toggleModalChangePass" @UpdateSuccess="UpdateSuccess">
         </detailPersonnalModal>
+        <detailPromotionModal v-if="modalActiveDetailPromotion" :id="idPromotion"
+            @close="toggleModalDetailPromotion(0)">
+        </detailPromotionModal>
         <changePassModal v-if="modalActiveChangePass" @close="toggleModalChangePass" @onActive="changePass($event)">
         </changePassModal>
 
@@ -13,7 +16,8 @@
 
         <div class="row">
             <div class="col-md-6 col-12">
-                <listDishPage v-if="dishList" @addDish="addProductInOrder($event)"></listDishPage>
+                <listDishPage v-if="dishList" @addDish="addProductInOrder($event)"
+                    @onDetailPromotion="toggleModalDetailPromotion($event)"></listDishPage>
                 <mapPage v-if="map"></mapPage>
                 <billPage v-if="bill"></billPage>
             </div>
@@ -42,6 +46,7 @@ import orderCreatePage from '@/pages/staff/cashier/orderCreatePage.vue';
 
 import detailPersonnalModal from '@/components/modals/detailPersonnalModal.vue';
 import changePassModal from '@/components/modals/changePassModal.vue';
+import detailPromotionModal from '@/components/modals/detailPromotionModal.vue';
 
 import orderService from '@/services/order.service';
 import accountService from '@/services/account.service';
@@ -57,10 +62,11 @@ export default {
         billPage,
         detailPersonnalModal,
         changePassModal,
+        detailPromotionModal,
     },
 
     setup() {
-        // Quan  li trang thai trang
+        // Quan li trang thai trang
         let dishList = ref(true);
         let map = ref(false);
         let bill = ref(false);
@@ -108,27 +114,51 @@ export default {
         let modalActivePersonnal = ref(false);
         // Quan li modal cap nhat thong tin tai khoan
         let modalActiveChangePass = ref(false);
+        //Quan li trang thai chi tiet khuyen mai
+        let modalActiveDetailPromotion = ref(false);
 
         const toggleModalPersonnal = () => {
             modalActivePersonnal.value = !modalActivePersonnal.value;
             modalActiveChangePass.value = false;
+            modalActiveDetailPromotion.value = false;
         }
 
         const toggleModalChangePass = () => {
             modalActivePersonnal.value = false;
+            modalActiveDetailPromotion.value = false;
             modalActiveChangePass.value = !modalActiveChangePass.value;
+        }
+
+        let idPromotion = ref('');
+        const toggleModalDetailPromotion = (id) => {
+            idPromotion.value = id;
+            modalActivePersonnal.value = false;
+            modalActiveChangePass.value = false;
+            modalActiveDetailPromotion.value = !modalActiveDetailPromotion.value;
         }
 
         //Luu danh sach san pham order
         let listDish = ref([]);
         const addProductInOrder = (data) => {
-            let dishOrder = {
-                idmon: data.idmon,
-                tenmon: data.tenmon,
-                gia: data.gia,
-                soluong: 1,
-            }
+            let dishOrder = {};
+            if (Object.prototype.hasOwnProperty.call(data, 'idmon')) {
+                dishOrder = {
+                    idmon: data.idmon,
+                    tenmon: data.tenmon,
+                    gia: data.gia,
+                    soluong: 1,
+                }
+            } else {
+                if (Object.prototype.hasOwnProperty.call(data, 'idkhuyenmai')) {
+                    dishOrder = {
+                        idmon: data.idkhuyenmai,
+                        tenmon: data.tenkhuyenmai,
+                        gia: data.thanhtoan,
+                        soluong: 1,
+                    }
+                }
 
+            }
             let checkIsset = false;
             for (let index = 0; index < listDish.value.length; index++) {
                 const element = listDish.value[index];
@@ -151,6 +181,7 @@ export default {
             });
         }
 
+        // Quan li trang thai message
         let showAlert = ref(false);
         let status = ref('');
         let messageAlert = ref('');
@@ -158,25 +189,38 @@ export default {
         return {
             dishList, map, bill, listDish, orderListNew, createOrder, onChange,
             addProductInOrder, removeDish,
-            modalActivePersonnal, toggleModalPersonnal, modalActiveChangePass, toggleModalChangePass,
+            modalActivePersonnal, toggleModalPersonnal,
+            modalActiveChangePass, toggleModalChangePass,
+            idPromotion, modalActiveDetailPromotion, toggleModalDetailPromotion,
             showAlert, status, messageAlert,
         };
     },
 
     methods: {
         async Order(data) {
+            let dishId = [];
+            let quantity = [];
+            let note = [];
+            this.listDish.forEach(element => {
+                console.log(element);
+                dishId.push(element.idmon);
+                quantity.push(element.soluong);
+                note.push('');
+            });
+
             let dataFormated = {
                 token: data.token,
                 status: data.status,
                 idTable: data.idTable,
-                idDish: data.dishId,
-                quantity: data.quantity,
-                note: data.note,
-            }
+                idDish: dishId,
+                quantity: quantity,
+                note: note,
+            };
+
             try {
                 await orderService.Create(dataFormated).then((result) => {
                     if (result.statusCode == 200) {
-                        //Thong  bao order thanh cong
+                        //Thong bao order thanh cong
                         this.listDish = [];
                     }
                 })

@@ -1,9 +1,18 @@
 <template>
     <selectDishTypeComponent @onselect="onSelect($event)"></selectDishTypeComponent>
 
-    <div class="row mt-2">
-        <div class="col-md-3 col-sm-6 col-12" v-for="(item, index) in listDishCurrent" :key="index">
-            <dishCardComponent @add="onAdd($event)" :dish="item"></dishCardComponent>
+    <div class="mt-2">
+        <div v-if="(listDishCurrent.length > 0)" class="row">
+            <div class="col-md-3 col-sm-6 col-12" v-for="(item, index) in listDishCurrent" :key="index">
+                <dishCardComponent @add="onAdd($event)" :dish="item"></dishCardComponent>
+            </div>
+        </div>
+        <div v-if="(listPromotionCurrent.length > 0)" class="row">
+            <div class="col-md-3 col-sm-6 col-12" v-for="(item, index) in listPromotionCurrent" :key="index">
+                <promotionCardComponent @add="onAdd($event)" @onDetailPromotion="onDetailPromotion($event)"
+                    :promotion="item">
+                </promotionCardComponent>
+            </div>
         </div>
     </div>
     <div>
@@ -15,23 +24,27 @@
 import { ref } from 'vue';
 import selectDishTypeComponent from '@/components/cashier/selectDishTypeComponent.vue';
 import dishCardComponent from '@/components/cashier/dishCardComponent.vue';
+import promotionCardComponent from '@/components/cashier/promotionCardComponent.vue'
 import dishService from '@/services/dish.service';
+import promotionService from '@/services/promotion.service';
 export default {
     components: {
-        selectDishTypeComponent, dishCardComponent
+        selectDishTypeComponent, dishCardComponent, promotionCardComponent
     },
     emits: ['addDish'],
 
     setup() {
         let listDishCurrent = ref([]);
+        let listPromotionCurrent = ref([]);
 
-        return { listDishCurrent, };
+        return { listDishCurrent, listPromotionCurrent };
     },
 
     data() {
         return {
             listDishFetch: [],
             listDishAll: [],
+            listComboFetch: [],
         }
     },
 
@@ -52,27 +65,38 @@ export default {
         async fetchData() {
             try {
                 this.listDishFetch = await dishService.FindAll();// Danh sacn mon duoc phan theo tung danh muc mon
+                this.listComboFetch = await promotionService.FindAll();
             } catch (error) {
                 console.log(error);
             }
         },
 
         onSelect(id) {
-            for (let index = 0; index < this.listDishFetch.length; index++) {
-                const element = this.listDishFetch[index];
-                this.listDishCurrent = [];
-                if (element.idloai == id) {
-                    this.listDishCurrent.push(...element.mon);
-                    break;
-                } else {
-                    this.listDishCurrent = this.listDishAll;
+            this.listPromotionCurrent = [];
+            this.listDishCurrent = [];
+            if (id == 100) {
+                this.listComboFetch.forEach(element => {
+                    this.listPromotionCurrent.push(element.khuyenmai);
+                });
+            } else {
+                for (let index = 0; index < this.listDishFetch.length; index++) {
+                    const element = this.listDishFetch[index];
+                    if (element.idloai == id) {
+                        this.listDishCurrent.push(...element.mon);
+                        break;
+                    } else {
+                        this.listDishCurrent = this.listDishAll;
+                    }
                 }
             }
-            console.log(123, this.listDishCurrent);
         },
 
         onAdd(data) { // Gui emit cho layout de layout xuw li them sp tren giao dien
             this.$emit('addDish', data);
+        },
+
+        onDetailPromotion(idPromotion) {
+            this.$emit('onDetailPromotion', idPromotion);
         }
     }
 }

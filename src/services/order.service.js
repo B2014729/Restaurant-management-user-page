@@ -29,10 +29,13 @@ class OrderService {
         return (await this.api.put(`/update-send-to-kitchen/${id}`)).data;
     }
 
-    async DishPaid(idorder, iddish, token) {
-        return (await this.api.put(`/dish-paid/${idorder}`, { idDish: iddish, token: token })).data;
+    async DishPaid(idorder, iddish, idcomnbo, token) {
+        return (await this.api.put(`/dish-paid/${idorder}`, {
+            idDish: iddish,
+            idCombo: idcomnbo,
+            token: token,
+        })).data;
     }
-
 }
 
 export default new OrderService();
