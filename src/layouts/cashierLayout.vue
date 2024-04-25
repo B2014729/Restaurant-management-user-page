@@ -150,6 +150,7 @@ export default {
                 }
             } else {
                 if (Object.prototype.hasOwnProperty.call(data, 'idkhuyenmai')) {
+                    console.log(data);
                     dishOrder = {
                         idmon: data.idkhuyenmai,
                         tenmon: data.tenkhuyenmai,
@@ -198,6 +199,7 @@ export default {
 
     methods: {
         async Order(data) {
+            console.log(data);
             let dishId = [];
             let quantity = [];
             let note = [];

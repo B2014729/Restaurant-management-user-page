@@ -139,6 +139,7 @@ export default {
                 this.errorNotifycation = false;
                 try {
                     this.data.token = this.$store.state.staff.token;
+                    this.data.staff = 1;    //id nhan vien tao => khach hang tao => nhan vien  = NVTAM trong db
                     await bookingService.Create(this.data).then((result) => {
                         if (result.statusCode == 200) {
                             this.showAlert = true;

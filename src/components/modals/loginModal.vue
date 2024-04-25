@@ -39,7 +39,7 @@
                             <div v-if="errorMessage" class="my-2 w-100 d-flex justify-content-end">
                                 <span class="text-danger" style="font-size: 13px;">
                                     <i class="fa-solid fa-triangle-exclamation text-danger"></i>
-                                    {{ message }}!
+                                    {{ message }}
                                 </span>
                             </div>
                             <div v-if="errorNotifycation" class="my-2 w-100 d-flex justify-content-end">

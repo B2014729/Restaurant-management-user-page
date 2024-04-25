@@ -147,6 +147,9 @@ export default {
                 let result = await accountService.Login(data);
                 if (result.status == 200) {
                     this.isLogin = true;
+                    this.message = '';
+                    this.errorMessage = false;
+
                     this.$cookies.set('jwt', result.headers.authorization);
                     this.$store.dispatch('staff',
                         {

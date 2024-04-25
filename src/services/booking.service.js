@@ -33,6 +33,10 @@ class BookingsService {
         return (await this.api.get(`/list-with-customer/${token}`)).data.data;
     }
 
+    async GetBookingsTable(idTable) {
+        return (await this.api.get(`/list-with-table/${idTable}`)).data.data;
+    }
+
 }
 
 export default new BookingsService();

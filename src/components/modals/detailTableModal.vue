@@ -6,7 +6,7 @@
                     <h5 class="text-dark fw-bold">Thông tin dùng món</h5>
                     <button type="button" class="btn-close" @click="closeModal"></button>
                 </div>
-                <div class="mt-4" style="min-height: 510px;">
+                <div class="mt-4" style="min-height: 530px;">
                     <div class="d-flex justify-content-between">
                         <div class="float-start">
                             <h6 class="text-dark fw-bold text-start">Bàn số: {{ idTable }}</h6>
@@ -17,44 +17,54 @@
                             <span v-else class="status-free">Bàn trống</span>
                         </div>
                     </div>
-                    <div>
-                        <h6 class="fw-bold text-warning">Danh sách món đã dùng</h6>
+                    <div class="d-flex flex-column h-100">
                         <div>
-                            <table class="table table-bordered table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" style="width: 20px;">STT</th>
-                                        <th scope="col" style="width: 100px;">Mã số</th>
-                                        <th scope="col">Tên món</th>
-                                        <th scope="col" style="width: 100px;">Số lượng</th>
-                                        <th scope="col">Đơn giá (vnd)</th>
-                                        <th scope="col">Giảm giá (vnd)</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, index) in listDish" :key="index">
-                                        <th scope="row">{{ index + 1 }}</th>
-                                        <td>{{ item.id }}</td>
-                                        <td>{{ item.tenmon }}</td>
-                                        <td>{{ item.soluong }}</td>
-                                        <td>{{ formatNumber(item.gia + item.giamgia) }}</td>
-                                        <td>{{ formatNumber(item.giamgia) }}</td>
-                                    </tr>
-                                    <hr>
-                                    <tr>
-                                        <td colspan="4" class="fw-bold text-end bg-warning">Tổng:</td>
-                                        <td class="fw-bold">
-                                            {{ formatNumber(billInfor.thanhtoan + billInfor.giamgia) }} vnđ
-                                        </td>
-                                        <td class="fw-bold">{{ formatNumber(billInfor.giamgia) }} vnđ</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="4" class="fw-bold text-end bg-success">Thanh toán:</td>
-                                        <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }} vnđ</td>
-                                    </tr>
-
-                                </tbody>
-                            </table>
+                            <h6 class="fw-bold text-warning text-start">Danh sách món đã dùng</h6>
+                            <div>
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" style="width: 20px;">STT</th>
+                                            <th scope="col" style="width: 100px;">Mã số</th>
+                                            <th scope="col">Tên món</th>
+                                            <th scope="col" style="width: 100px;">Số lượng</th>
+                                            <th scope="col">Đơn giá (vnd)</th>
+                                            <th scope="col">Giảm giá (vnd)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="(item, index) in listDish" :key="index">
+                                            <th scope="row">{{ index + 1 }}</th>
+                                            <td>{{ item.id }}</td>
+                                            <td>{{ item.tenmon }}</td>
+                                            <td>{{ item.soluong }}</td>
+                                            <td>{{ formatNumber(item.gia + item.giamgia) }}</td>
+                                            <td>{{ formatNumber(item.giamgia) }}</td>
+                                        </tr>
+                                        <hr>
+                                        <tr>
+                                            <td colspan="4" class="fw-bold text-end bg-warning">Tổng:</td>
+                                            <td class="fw-bold">
+                                                {{ formatNumber(billInfor.thanhtoan + billInfor.giamgia) }} vnđ
+                                            </td>
+                                            <td class="fw-bold">{{ formatNumber(billInfor.giamgia) }} vnđ</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4" class="fw-bold text-end bg-success">Thanh toán:</td>
+                                            <td class="fw-bold">{{ formatNumber(billInfor.thanhtoan) }} vnđ</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="">
+                            <h6 class="fw-bold text-warning text-start">Sắp diễn ra:</h6>
+                            <ul>
+                                <li class="text-dark text-start" v-for="(item, index) in listBookings" :key="index">
+                                    {{ formatTime(item.ngaygio) }} ({{ item.cachgio }} giờ) | KH: {{
+                                        item.thongtinkhachhang.hotenkhachhang }}
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -70,6 +80,7 @@
 
 <script>
 import billService from '@/services/bill.service';
+import bookingService from '@/services/booking.service';
 
 export default {
     setup(props, context) {
@@ -78,6 +89,8 @@ export default {
         }
 
         const formatNumber = (number) => {
+            if (!number)
+                return 0;
             return (new Intl.NumberFormat().format(number));
         }
 
@@ -96,8 +109,19 @@ export default {
             return `${hours}:${minutes}:${seconds} ${dateIn}/${month}/${year}`;
         }
 
+        function formatTime(date) {
+            if (!date) {
+                return '____';
+            }
+            let newDate = new Date(date);
+            let hours = newDate.getHours() >= 10 ? newDate.getHours() : `0${newDate.getHours()}`;
+            let minutes = newDate.getMinutes() >= 10 ? newDate.getMinutes() : `0${newDate.getMinutes()}`;
+
+            return `${hours}:${minutes}`;
+        }
+
         return {
-            closeModal, formatNumber, formatDateTime,
+            closeModal, formatNumber, formatDateTime, formatTime
         };
     },
 
@@ -111,16 +135,17 @@ export default {
         return {
             billInfor: {},
             listDish: [],
+            listBookings: [],
         };
     },
 
     async created() {
-        await this.fetchData();
-
+        await this.fetchDataBill();
+        await this.fetchDataBooking();
     },
 
     methods: {
-        async fetchData() {
+        async fetchDataBill() {
             try {
                 this.billInfor = await billService.FindOneByIdTable(this.idTable);
                 let dish = {};
@@ -141,9 +166,30 @@ export default {
                         })
                     }
                 });
-
             } catch (error) {
                 this.billInfor = {};
+                console.log(error);
+            }
+        },
+
+        async fetchDataBooking() {
+            try {
+                let dateNow = new Date();
+                let dateElementTomorrow = new Date();
+                dateElementTomorrow.setDate(dateElementTomorrow.getDate() + 1);
+                dateElementTomorrow.setHours(0, 0, 0);
+
+                let listBookingsTable = await bookingService.GetBookingsTable(this.idTable);
+                listBookingsTable.forEach(element => {
+                    let dateElement = new Date(element.ngaygio);
+
+                    if (dateElement > dateNow && dateElement < dateElementTomorrow) {
+                        element.cachgio = dateElement.getHours() - dateNow.getHours();
+                        this.listBookings.push(element);
+                    }
+                });
+            } catch (error) {
+                this.listBookings = [];
                 console.log(error);
             }
         },
@@ -175,10 +221,11 @@ export default {
 .modal-booking-content {
     background-color: rgb(255, 255, 255);
     width: 50%;
-    margin: 50px 0px 50px 0px;
+    margin: 20px 0px 50px 0px;
     border-radius: 5px;
     animation-name: animationShow;
     animation-duration: 300ms;
+    overflow: auto;
 }
 
 @keyframes animationShow {
@@ -187,7 +234,7 @@ export default {
     }
 
     100% {
-        margin-top: 50px;
+        margin-top: 20px;
     }
 }
 
