@@ -24,7 +24,7 @@
                     <span class="text-black fs-4" style="font-family: 'Times New Roman', Times, serif;">
                         __________________________________Open Hours__________________________________
                     </span>
-                    <p class="hours-time">Monday to Sunday 11:30 - 22:00</p>
+                    <p class="hours-time">Monday to Sunday 08:30 - 23:00</p>
                     <p class="text-warning fw-bold">You must login with your account before booking a table</p>
                 </div>
             </div>
@@ -95,7 +95,7 @@ export default {
     components: {
         confirmPayment, alertMessage
     },
-
+    emits: ['onLogin'],
     props: {
         isLogin: {
             type: Boolean,

@@ -31,7 +31,7 @@ export default {
     components: {
         selectDishTypeComponent, dishCardComponent, promotionCardComponent
     },
-    emits: ['addDish'],
+    emits: ['addDish', 'addDish', 'onDetailPromotion'],
 
     setup() {
         let listDishCurrent = ref([]);
@@ -82,6 +82,7 @@ export default {
                 for (let index = 0; index < this.listDishFetch.length; index++) {
                     const element = this.listDishFetch[index];
                     if (element.idloai == id) {
+                        this.listDishCurrent = [];
                         this.listDishCurrent.push(...element.mon);
                         break;
                     } else {

@@ -83,6 +83,8 @@ import billService from '@/services/bill.service';
 import bookingService from '@/services/booking.service';
 
 export default {
+    emits: ['close'],
+
     setup(props, context) {
         const closeModal = () => {
             context.emit("close");

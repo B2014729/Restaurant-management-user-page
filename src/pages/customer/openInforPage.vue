@@ -12,7 +12,8 @@
         </div>
     </div>
 </template>
-
+<script>
+</script>
 <style scoped>
 .open {
     height: 520px;

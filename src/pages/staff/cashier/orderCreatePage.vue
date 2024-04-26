@@ -9,7 +9,7 @@
                 <option value="1">Thêm món</option>
             </select>
         </div>
-        <div class="input-group w-25">
+        <div class="input-group d-flex w-25">
             <span class="input-group-text fw-bold" id="idtable">Bàn số:</span>
             <select class="form-select" aria-label="Default select example" v-model="data.idTable">
                 <option
@@ -19,6 +19,11 @@
                 </option>
             </select>
         </div>
+    </div>
+    <div class="d-flex justify-content-end me-2">
+        <span v-if="error" class="text-danger text-end" style="font-size: 14px;">
+            {{ messageError }}
+        </span>
     </div>
     <hr class="mt-2 m-0">
     <div class="h-100 d-flex align-items-end flex-column me-2">
@@ -51,14 +56,12 @@
                 </tr>
             </tbody>
         </table>
-        <span v-if="error" class="text-danger" style="font-size: 14px;">
-            Vui lòng chọn đầy đủ trạng thái và số bàn!
-        </span>
         <button class="btn btn-success" @click="order">Order</button>
     </div>
 </template>
 
 <script>
+import tableService from '@/services/table.service';
 import { ref } from 'vue';
 export default {
     props: {
@@ -70,12 +73,13 @@ export default {
 
     setup() {
         let error = ref(false);
+        let messageError = ref('');
 
         const formatNumber = (number) => {
             return (new Intl.NumberFormat().format(number))
         }
 
-        return { error, formatNumber };
+        return { error, messageError, formatNumber };
     },
 
     data() {
@@ -92,22 +96,39 @@ export default {
     },
 
     created() {
-        console.log(this.listDishOrder);
+        //console.log(this.listDishOrder);
     },
 
     methods: {
-        order() {
+        async order() {
             if (this.data.idTable == '') {
                 this.error = true;
+                this.messageError = 'Vui lòng chọn đầy đủ trạng thái và số bàn!';
             } else {
-                this.data.token = this.$store.state.staff.token;
                 this.error = false;
-                this.listDishOrder.forEach(element => {
-                    this.data.dishId.push(element.idmon);
-                    this.data.quantity.push(element.soluong);
-                    this.data.note.push("");
-                });
-                this.$emit('order', this.data);
+                if (this.data.status == '0') {
+                    let listTable = await tableService.FindAll();
+                    for (let index = 0; index < listTable.length; index++) {
+                        const element = listTable[index];
+                        if (element.idban == this.data.idTable && element.trangthai == 1) {
+                            this.error = true;
+                            this.messageError = 'Bạn đang ăn, không thể thêm bàn mới!';
+                            break;
+                        } else {
+                            this.error = false;
+                        }
+                    }
+                }
+
+                if (!this.error) {
+                    this.data.token = this.$store.state.staff.token;
+                    this.listDishOrder.forEach(element => {
+                        this.data.dishId.push(element.idmon);
+                        this.data.quantity.push(element.soluong);
+                        this.data.note.push("");
+                    });
+                    this.$emit('order', this.data);
+                }
             }
         },
 
