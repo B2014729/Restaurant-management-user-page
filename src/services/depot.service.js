@@ -17,6 +17,10 @@ class DepotService {
         return (await this.api.put('/update', { listId: listId, listQuantity: listQuantity })).data;
     }
 
+    async UpdateGoodsInDepot(listGoodsUpdate) {
+        return (await this.api.put('/update-goods', { listGoods: listGoodsUpdate, })).data;
+    }
+
 }
 
 export default new DepotService();

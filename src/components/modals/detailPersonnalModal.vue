@@ -61,7 +61,7 @@
                                                 <label for="phone">*Số điện thoại:</label>
                                             </div>
                                             <div class="form-floating mb-2">
-                                                <select class="form-select" id="position"
+                                                <select class="form-select" id="position" disabled
                                                     aria-label="Default select example" v-model="data.idchucvu">
                                                     <option value="1">Thu ngân</option>
                                                     <option value="2">Phục vụ</option>
@@ -194,10 +194,12 @@ export default {
                     }
                     await staffService.Update(this.$store.state.staff.token, dataUpdate).then(result => {
                         if (result.statusCode == 200) {
-                            this.$emit('UpdateSuccess');
+                            this.$emit('UpdateSuccess', 'success');
                         }
+                        this.$emit('UpdateSuccess', 'danger');
                     });
                 } catch (error) {
+                    this.$emit('UpdateSuccess', 'danger');
                     console.log(error);
                 }
             }

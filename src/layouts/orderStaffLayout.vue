@@ -7,31 +7,31 @@
         <detailPersonnalModal v-if="modalActivePersonnal" @close="toggleModalPersonnal"
             @changePass="toggleModalChangePass" @UpdateSuccess="UpdateSuccess($event)">
         </detailPersonnalModal>
+
         <changePassModal v-if="modalActiveChangePass" @close="toggleModalChangePass" @onActive="changePass($event)">
         </changePassModal>
 
-        <navKitchenComponent @onChange="onChange($event)" @logout="toggleModalConfirm">
-        </navKitchenComponent>
+        <navOrderStaffComponent @onChange="onChange($event)" @logout="toggleModalConfirm"
+            @personnal="toggleModalPersonnal">
+        </navOrderStaffComponent>
         <alertMessage v-if="showAlert" :status="status" :message="messageAlert"></alertMessage>
-        <div class="container w-75" style="padding: 0px 60px; min-height: 600px;">
-            <listOrderPage v-if="order"></listOrderPage>
-            <listOrderPaidPage v-if="orderpaid"></listOrderPaidPage>
-            <depotManagerPage v-if="depot"></depotManagerPage>
+        <div class="container">
+            <calendrierWorkStaffPage v-if="calendrier"> </calendrierWorkStaffPage>
+            <registerWorkStaffPage v-if="register"></registerWorkStaffPage>
         </div>
     </div>
 </template>
 
 <script>
 import { ref } from 'vue';
-import navKitchenComponent from '@/components/kitchen/navKitchenComponent.vue';
+import navOrderStaffComponent from '@/components/orderStaff/navOrderStaffComponent.vue'
 
 import detailPersonnalModal from '@/components/modals/detailPersonnalModal.vue';
 import changePassModal from '@/components/modals/changePassModal.vue';
 import confirmPaymentModal from '@/components/modals/confirmPayment.vue';
 
-import listOrderPage from '@/pages/staff/kitchen/listOrderPage.vue';
-import listOrderPaidPage from '@/pages/staff/kitchen/listOrderPaidPage.vue';
-import depotManagerPage from '@/pages/staff/kitchen/depotManagerPage.vue';
+import calendrierWorkStaffPage from '@/pages/staff/calendrierWorkStaffPage.vue';
+import registerWorkStaffPage from '@/pages/staff/registerWorkStaffPage.vue';
 
 import alertMessage from '@/components/alertMessage/alertMessage.vue';
 import accountService from '@/services/account.service';
@@ -39,40 +39,29 @@ import accountService from '@/services/account.service';
 
 export default {
     components: {
-        navKitchenComponent,
+        navOrderStaffComponent,
         detailPersonnalModal,
         changePassModal,
         confirmPaymentModal,
         alertMessage,
-        listOrderPage, listOrderPaidPage, depotManagerPage
+        calendrierWorkStaffPage,
+        registerWorkStaffPage
     },
 
     setup() {
         // Quan  li trang thai trang
-        let order = ref(true);
-        let orderpaid = ref(false);
-        let depot = ref(false);
+        let calendrier = ref(true);
+        let register = ref(false);
 
         const onChange = (data) => {
             switch (data) {
-                case 'order':
-                    order.value = true;
-                    orderpaid.value = false;
-                    depot.value = false;
+                case 'calendrier':
+                    calendrier.value = true;
+                    register.value = false;
                     break;
-                case 'orderpaid':
-                    order.value = false;
-                    orderpaid.value = true;
-                    depot.value = false;
-                    break;
-                case 'depot':
-                    order.value = false;
-                    orderpaid.value = false;
-                    depot.value = true;
-                    break;
-                case 'personnal':
-                    order.value = true;
-                    toggleModalPersonnal();
+                case 'register':
+                    calendrier.value = false;
+                    register.value = true;
                     break;
                 default:
                     break;
@@ -111,7 +100,8 @@ export default {
         let messageAlert = ref('');
 
         return {
-            order, orderpaid, depot, onChange,
+            calendrier, register,
+            onChange,
             modalActivePersonnal, toggleModalPersonnal,
             modalActiveChangePass, toggleModalChangePass,
             showAlert, status, messageAlert,

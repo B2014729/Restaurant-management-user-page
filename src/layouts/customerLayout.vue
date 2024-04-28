@@ -164,6 +164,9 @@ export default {
                     else if (result.data.data[0].quyen == 3) {
                         this.$router.push('/nhan-vien/bep');
                     }
+                    else if (result.data.data[0].quyen == 0) {
+                        this.$router.push('/nhan-vien/phuc-vu');
+                    }
                     else if (result.data.data[0].quyen == 10) {
                         this.$router.push('/');
                         this.modalLoginActive = false;

@@ -29,6 +29,17 @@ const routes = [
         }
     },
     {
+        path: '/nhan-vien/phuc-vu',
+        name: 'order-staff-page',
+        component: () => import('@/layouts/orderStaffLayout.vue'),
+        beforeEnter: (to, from, next) => {
+            if (!store.state.staff || (store.state.staff.quyentruycap != 0)) {
+                next('/');
+            }
+            next();
+        }
+    },
+    {
         path: '/nhan-vien/lich-lam-viec',
         name: 'calendrier-work-page',
         component: () => import('@/layouts/calendrierWorkStaffLayout.vue'),

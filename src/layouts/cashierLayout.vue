@@ -1,7 +1,9 @@
 <template>
     <div>
+        <confirmPaymentModal v-if="modalActiveConfirmLogout" message="Bạn muốn đăng xuất khỏi hệ thống ?"
+            @close="toggleModalConfirm" @onActive="logout"></confirmPaymentModal>
         <detailPersonnalModal v-if="modalActivePersonnal" @close="toggleModalPersonnal"
-            @changePass="toggleModalChangePass" @UpdateSuccess="UpdateSuccess">
+            @changePass="toggleModalChangePass" @UpdateSuccess="UpdateSuccess($event)">
         </detailPersonnalModal>
         <detailPromotionModal v-if="modalActiveDetailPromotion" :id="idPromotion"
             @close="toggleModalDetailPromotion(0)">
@@ -9,7 +11,7 @@
         <changePassModal v-if="modalActiveChangePass" @close="toggleModalChangePass" @onActive="changePass($event)">
         </changePassModal>
 
-        <navCashierComponent @onChange="onChange($event)" @logout="logout">
+        <navCashierComponent @onChange="onChange($event)" @logout="toggleModalConfirm">
         </navCashierComponent>
 
         <alertMessage v-if="showAlert" :status="status" :message="messageAlert"></alertMessage>
@@ -47,6 +49,7 @@ import orderCreatePage from '@/pages/staff/cashier/orderCreatePage.vue';
 import detailPersonnalModal from '@/components/modals/detailPersonnalModal.vue';
 import changePassModal from '@/components/modals/changePassModal.vue';
 import detailPromotionModal from '@/components/modals/detailPromotionModal.vue';
+import confirmPaymentModal from '@/components/modals/confirmPayment.vue';
 
 import orderService from '@/services/order.service';
 import accountService from '@/services/account.service';
@@ -63,6 +66,7 @@ export default {
         detailPersonnalModal,
         changePassModal,
         detailPromotionModal,
+        confirmPaymentModal
     },
 
     setup() {
@@ -112,29 +116,43 @@ export default {
 
         // Quan li modal thong tin ca nhan
         let modalActivePersonnal = ref(false);
-        // Quan li modal cap nhat thong tin tai khoan
-        let modalActiveChangePass = ref(false);
-        //Quan li trang thai chi tiet khuyen mai
-        let modalActiveDetailPromotion = ref(false);
 
         const toggleModalPersonnal = () => {
             modalActivePersonnal.value = !modalActivePersonnal.value;
             modalActiveChangePass.value = false;
             modalActiveDetailPromotion.value = false;
+            modalActiveConfirmLogout.value = false;
         }
+        // Quan li modal cap nhat thong tin tai khoan
+        let modalActiveChangePass = ref(false);
 
         const toggleModalChangePass = () => {
             modalActivePersonnal.value = false;
+            modalActiveConfirmLogout.value = false;
             modalActiveDetailPromotion.value = false;
             modalActiveChangePass.value = !modalActiveChangePass.value;
         }
+
+        //Quan li trang thai chi tiet khuyen mai
+        let modalActiveDetailPromotion = ref(false);
 
         let idPromotion = ref('');
         const toggleModalDetailPromotion = (id) => {
             idPromotion.value = id;
             modalActivePersonnal.value = false;
             modalActiveChangePass.value = false;
+            modalActiveConfirmLogout.value = false;
             modalActiveDetailPromotion.value = !modalActiveDetailPromotion.value;
+        }
+
+        //Quan li trang thai modal confirm logout
+        let modalActiveConfirmLogout = ref(false);
+
+        const toggleModalConfirm = () => {
+            modalActivePersonnal.value = false;
+            modalActiveChangePass.value = false;
+            modalActiveDetailPromotion.value = false;
+            modalActiveConfirmLogout.value = !modalActiveConfirmLogout.value;
         }
 
         //Luu danh sach san pham order
@@ -193,18 +211,17 @@ export default {
             modalActivePersonnal, toggleModalPersonnal,
             modalActiveChangePass, toggleModalChangePass,
             idPromotion, modalActiveDetailPromotion, toggleModalDetailPromotion,
+            modalActiveConfirmLogout, toggleModalConfirm,
             showAlert, status, messageAlert,
         };
     },
 
     methods: {
         async Order(data) {
-            console.log(data);
             let dishId = [];
             let quantity = [];
             let note = [];
             this.listDish.forEach(element => {
-                console.log(element);
                 dishId.push(element.idmon);
                 quantity.push(element.soluong);
                 note.push('');
@@ -262,15 +279,23 @@ export default {
             }
         },
 
-        UpdateSuccess() {
+        UpdateSuccess(status) {
             this.modalActivePersonnal = false;
-
-            this.showAlert = true;
-            this.messageAlert = 'Đã cập nhật thông tin cá nhân!';
-            this.status = 'success';
-            setTimeout(() => {
-                this.showAlert = false;
-            }, 2500);
+            if (status == 'success') {
+                this.showAlert = true;
+                this.messageAlert = 'Đã cập nhật thông tin cá nhân!';
+                this.status = 'success';
+                setTimeout(() => {
+                    this.showAlert = false;
+                }, 2500);
+            } else {
+                this.showAlert = true;
+                this.messageAlert = 'Chưa thay đổi thông tin để cập nhật!';
+                this.status = 'warning';
+                setTimeout(() => {
+                    this.showAlert = false;
+                }, 2500);
+            }
         }
     }
 }

@@ -4,7 +4,7 @@
             <div class="p-3">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex">
-                        <h4 class="text-secondary fw-bold">Giai đoạn__:</h4>
+                        <h4 class="text-secondary fw-bold">Lịch làm việc:</h4>
                         <div class="ms-4 d-flex">
                             <select class="form-select" aria-label="Default select example" v-model="phase"
                                 @change="onPhases">
@@ -144,7 +144,7 @@ export default {
 
     data() {
         return {
-            phase: '1',
+            phase: 1,
             calendrier: [],
             phaseList: [],
             month: 1,
@@ -154,6 +154,7 @@ export default {
     async created() {
         try {
             this.phaseList = await calendrierService.GetPhase();
+            this.phase = this.phaseList[this.phaseList.length - 1].idgiaidoan;
             await this.fetchData();
         } catch (error) {
             console.log(error);

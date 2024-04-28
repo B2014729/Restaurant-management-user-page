@@ -5,7 +5,6 @@
             <calendrierWorkStaffPage v-if="calendrier"> </calendrierWorkStaffPage>
             <registerWorkStaffPage v-if="register"></registerWorkStaffPage>
         </div>
-
     </div>
 </template>
 <script>

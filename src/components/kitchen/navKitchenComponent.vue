@@ -93,7 +93,7 @@ export default {
 
     data() {
         return {
-            username: 'thanhthuy'
+            username: this.$store.state.staff.tendangnhap
         }
     },
 

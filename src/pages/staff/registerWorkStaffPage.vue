@@ -1,10 +1,10 @@
 <template>
-    <div class="d-flex flex-column">
+    <div class="p-3 d-flex flex-column">
         <div class="row text-start mt-0">
             <div class="p-3">
                 <div class="d-flex justify-content-between">
                     <div class="d-flex">
-                        <h4 class="text-secondary fw-bold">Đăng kí lịch làm việc__:</h4>
+                        <h4 class="text-secondary fw-bold">Đăng kí lịch làm việc:</h4>
 
                         <div class="ms-4 d-flex">
                             <select class="form-select" aria-label="Default select example" v-model="phase"
@@ -166,20 +166,6 @@ export default {
     async created() {
         try {
             await this.fetchData();
-            this.phaseList = await calendrierService.GetPhase();
-
-            this.phaseList.forEach(element => {
-                if (element.idgiaidoan == this.phase) {
-                    this.month = (new Date(element.ngaybatdau).getMonth()) + 1;
-                }
-            });
-
-            if (this.phaseList.length != 0) {
-                this.phaseList.forEach((element) => {
-                    element.ngaybatdau = moment(element.ngaybatdau).format("DD/MM/YYYY");
-                    element.ngayketthuc = moment(element.ngayketthuc).format("DD/MM/YYYY");
-                });
-            }
         } catch (error) {
             console.log(error);
         }
@@ -198,6 +184,21 @@ export default {
                     listId.forEach(element => {
                         this.listIdCalendrierInPhase.push(element.idlichlamviec);
                     })
+                }
+
+                this.phaseList = await calendrierService.GetPhase();
+
+                this.phaseList.forEach(element => {
+                    if (element.idgiaidoan == this.phase) {
+                        this.month = (new Date(element.ngaybatdau).getMonth()) + 1;
+                    }
+                });
+
+                if (this.phaseList.length != 0) {
+                    this.phaseList.forEach((element) => {
+                        element.ngaybatdau = moment(element.ngaybatdau).format("DD/MM/YYYY");
+                        element.ngayketthuc = moment(element.ngayketthuc).format("DD/MM/YYYY");
+                    });
                 }
             } catch (error) {
                 console.log(error);

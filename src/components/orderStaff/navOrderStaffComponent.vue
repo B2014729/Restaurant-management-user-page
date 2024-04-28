@@ -19,14 +19,27 @@
                 </ul>
             </div>
             <div class="col-md-6 col-12 d-flex justify-content-end h-100 align-items-center">
-                <button class="btn btn-warning h-50" @click="goBack">Back</button>
+                <div class="dropdown">
+                    <button class="btn btn-warning dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        {{ username }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" @click="personnalInfor" href="#">
+                                <i class="fa-solid fa-user"></i> Cá nhân</a>
+                        </li>
+                        <li><a class="dropdown-item" @click="logout" href="#">
+                                <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import router from '@/router';
 import { ref } from 'vue';
 export default {
     emits: ['onChange'],
@@ -52,17 +65,19 @@ export default {
         }
     },
 
+    data() {
+        return {
+            username: this.$store.state.staff.tendangnhap
+        }
+    },
+
     methods: {
-        goBack() {
-            console.log(this.$store.state.staff.quyentruycap);
-            if (this.$store.state.staff.quyentruycap == 3) {
-                router.push({ path: '/nhan-vien/bep' })
-            }
-            else {
-                if (this.$store.state.staff.quyentruycap == 1) {
-                    router.push({ path: '/nhan-vien/thu-ngan/' })
-                }
-            }
+        logout() {
+            this.$emit('logout');
+        },
+
+        personnalInfor() {
+            this.$emit('personnal');
         }
     }
 }
