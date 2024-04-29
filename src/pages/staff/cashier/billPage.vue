@@ -132,7 +132,7 @@ export default {
         async onConfirmPayment(idtable) {
             this.modalConfirm = false;
             try {
-                await billService.UpdateStatusPayment(idtable, this.idStaff);
+                await billService.UpdateStatusPayment(idtable, this.$store.state.staff.token);
                 await this.fetchData();
             } catch (error) {
                 console.log(error);
@@ -163,5 +163,9 @@ export default {
 
 .btn-infor:hover>i {
     color: rgba(255, 140, 0, 0.929);
+}
+
+table>thead>tr>th {
+    background-color: gray;
 }
 </style>

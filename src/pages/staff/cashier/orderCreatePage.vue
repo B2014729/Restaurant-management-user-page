@@ -31,12 +31,12 @@
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th class="bg-secondary" scope="col" style="width: 20px;">STT</th>
-                    <th class="bg-secondary" scope="col">Mã món</th>
-                    <th class="bg-secondary" scope="col">Tên món</th>
-                    <th class="bg-secondary" scope="col" style="width:100px;">Số lượng</th>
-                    <th class="bg-secondary" scope="col">Đơn giá (vnd)</th>
-                    <th class="bg-secondary" style="width: 30px;"></th>
+                    <th scope="col" style="width: 20px;">STT</th>
+                    <th scope="col">Mã món</th>
+                    <th scope="col">Tên món</th>
+                    <th scope="col" style="width:100px;">Số lượng</th>
+                    <th scope="col">Đơn giá (vnd)</th>
+                    <th style="width: 30px;"></th>
                 </tr>
             </thead>
             <tbody>
@@ -128,6 +128,7 @@ export default {
                         this.data.note.push("");
                     });
                     this.$emit('order', this.data);
+                    this.data.idTable = 0;
                 }
             }
         },
@@ -143,5 +144,9 @@ export default {
 .btn-quantity {
     border: none;
     background-color: rgba(255, 255, 255, 0);
+}
+
+table>thead>tr>th {
+    background-color: gray;
 }
 </style>

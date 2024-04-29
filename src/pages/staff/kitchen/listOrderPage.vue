@@ -178,4 +178,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+table>thead>tr>th {
+    background-color: gray;
+}
+</style>

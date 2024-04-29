@@ -241,6 +241,12 @@ export default {
                     if (result.statusCode == 200) {
                         //Thong bao order thanh cong
                         this.listDish = [];
+                        this.showAlert = true;
+                        this.messageAlert = 'Order thành công!';
+                        this.status = 'success';
+                        setTimeout(() => {
+                            this.showAlert = false;
+                        }, 2500);
                     }
                 })
             } catch (error) {
@@ -265,9 +271,8 @@ export default {
                         setTimeout(() => {
                             this.showAlert = false;
                         }, 2500);
-
                     }
-                })
+                });
             } catch (error) {
                 console.log(error);
                 this.showAlert = true;

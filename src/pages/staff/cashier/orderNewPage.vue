@@ -160,4 +160,8 @@ export default {
 .btn-send-check:hover>i {
     color: rgba(255, 140, 0, 0.929);
 }
+
+table>thead>tr>th {
+    background-color: gray;
+}
 </style>

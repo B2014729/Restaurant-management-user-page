@@ -45,8 +45,8 @@ class BillService {
         return (await this.api.get(`/list/date/${date}`)).data.data;
     }
 
-    async UpdateStatusPayment(idTable, idStaff) {
-        return (await this.api.put(`/table/${idTable}`, { idStaff })).data;
+    async UpdateStatusPayment(idTable, token) {
+        return (await this.api.put(`/table/${idTable}`, { token: token })).data;
     }
 }
 
