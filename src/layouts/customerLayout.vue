@@ -23,6 +23,7 @@
 
         <homePage id="home"></homePage>
         <aboutPage id="about"></aboutPage>
+        <promotionPage></promotionPage>
         <openInforPage></openInforPage>
         <menuPage id="menu"></menuPage>
         <orderPage id="order" @onLogin="toggleModalLogin" :isLogin="isLogin">
@@ -65,6 +66,7 @@ import openInforPage from "@/pages/customer/openInforPage.vue";
 import orderPage from "@/pages/customer/orderPage.vue";
 import menuPage from "@/pages/customer/menuPage.vue";
 import listBookingsPage from '@/pages/customer/listBookingsPage.vue';
+import promotionPage from '@/pages/customer/promotionPage.vue';
 
 import loginModal from "@/components/modals/loginModal.vue";
 import registerModal from "@/components/modals/registerModal.vue";
@@ -79,7 +81,7 @@ export default {
     name: 'App',
     components: {
         navCustomerComponent,
-        homePage, aboutPage, openInforPage, listBookingsPage,
+        homePage, aboutPage, openInforPage, listBookingsPage, promotionPage,
         orderPage, menuPage, loginModal, registerModal, confirmPayment, showEvaluateModal, createEvaluateModal
     },
 
@@ -199,6 +201,7 @@ export default {
                 let resultRegister = await accountService.Register(dataFormat);
                 if (resultRegister.statusCode == 200) {
                     this.modalRegisterActive = false;
+
                     await this.login(dataFormat);
                 }
             } catch (error) {
@@ -212,6 +215,7 @@ export default {
                 await evaluateService.Create(data).then((result) => {
                     if (result.statusCode == 200) {
                         this.modalCreateEval = false;
+                        this.modalShowEval = true;
                     }
                 })
             } catch (error) {

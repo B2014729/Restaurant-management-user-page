@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="bg-white p-2 row">
-                                <div class="col-6" v-for="(value, index) in evaluate" :key="index">
+                                <div class="col-4" v-for="(value, index) in evaluate" :key="index">
                                     <evaluateCardComponent :evaluate="value">
                                     </evaluateCardComponent>
                                 </div>
@@ -168,6 +168,7 @@ export default {
     border-radius: 5px;
     animation-name: animationShow;
     animation-duration: 300ms;
+    overflow: auto;
 }
 
 @keyframes animationShow {
