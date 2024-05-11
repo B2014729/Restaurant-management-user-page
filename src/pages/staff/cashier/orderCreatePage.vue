@@ -4,14 +4,14 @@
     <div class="d-flex justify-content-between px-2">
         <div class="input-group w-50">
             <span class="input-group-text fw-bold" id="status">Trạng thái:</span>
-            <select class="form-select" aria-label="Default select example" v-model="data.status">
+            <select class="form-select" aria-label="Default select example" v-model="data.status" disabled>
                 <option selected value="0">Bàn mới</option>
                 <option value="1">Thêm món</option>
             </select>
         </div>
         <div class="input-group d-flex w-25">
             <span class="input-group-text fw-bold" id="idtable">Bàn số:</span>
-            <select class="form-select" aria-label="Default select example" v-model="data.idTable">
+            <select class="form-select" aria-label="Default select example" v-model="data.idTable" @change="checkTable">
                 <option
                     v-for="(item, index) in [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]"
                     :value="item" :key="index">
@@ -100,6 +100,15 @@ export default {
     },
 
     methods: {
+        async checkTable() {
+            try {
+                let table = await tableService.FindOneById(this.data.idTable);
+                this.data.status = table.trangthai;
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
         async order() {
             if (this.data.idTable == '') {
                 this.error = true;

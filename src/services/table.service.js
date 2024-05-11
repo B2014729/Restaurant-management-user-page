@@ -8,6 +8,11 @@ class TableService {
     async FindAll() {
         return (await this.api.get(`/list`)).data.data;
     }
+
+    async FindOneById(id) {
+        return (await this.api.get(`/${id}`)).data.data[0];
+    }
+
 }
 
 export default new TableService();

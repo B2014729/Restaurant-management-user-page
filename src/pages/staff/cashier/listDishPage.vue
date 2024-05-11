@@ -76,7 +76,9 @@ export default {
             this.listDishCurrent = [];
             if (id == 100) {
                 this.listComboFetch.forEach(element => {
-                    this.listPromotionCurrent.push(element.khuyenmai);
+                    if (element.khuyenmai.trangthai == 1) {
+                        this.listPromotionCurrent.push(element.khuyenmai);
+                    }
                 });
             } else {
                 for (let index = 0; index < this.listDishFetch.length; index++) {

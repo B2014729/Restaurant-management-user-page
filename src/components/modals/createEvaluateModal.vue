@@ -29,7 +29,7 @@
                         </textarea>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <button class="btn btn-outline-secondary" type="submit" @click="submit"> <i
+                        <button class="btn btn-warning" type="submit" @click="submit"> <i
                                 class="fa-regular fa-paper-plane"></i>
                         </button>
                     </div>

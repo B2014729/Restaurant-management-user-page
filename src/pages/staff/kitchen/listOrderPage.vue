@@ -151,7 +151,6 @@ export default {
 
         async DishPaid(idorder, iddish) {
             try {
-                console.log(idorder, iddish);
                 await orderService.DishPaid(idorder, iddish, '100', this.$store.state.staff.token).then((result) => {
                     if (result.statusCode == 200) {
                         this.fetchData();
@@ -164,7 +163,6 @@ export default {
 
         async ComboPaid(idorder, idcombo) {
             try {
-                console.log(idorder, idcombo);
                 await orderService.DishPaid(idorder, 100, idcombo, this.$store.state.staff.token).then((result) => {
                     if (result.statusCode == 200) {
                         this.fetchData();

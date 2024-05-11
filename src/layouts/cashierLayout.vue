@@ -285,6 +285,7 @@ export default {
         },
 
         UpdateSuccess(status) {
+            console.log(status);
             this.modalActivePersonnal = false;
             if (status == 'success') {
                 this.showAlert = true;

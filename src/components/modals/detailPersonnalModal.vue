@@ -195,8 +195,9 @@ export default {
                     await staffService.Update(this.$store.state.staff.token, dataUpdate).then(result => {
                         if (result.statusCode == 200) {
                             this.$emit('UpdateSuccess', 'success');
+                        } else {
+                            this.$emit('UpdateSuccess', 'danger');
                         }
-                        this.$emit('UpdateSuccess', 'danger');
                     });
                 } catch (error) {
                     this.$emit('UpdateSuccess', 'danger');

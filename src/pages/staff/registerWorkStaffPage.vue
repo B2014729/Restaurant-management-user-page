@@ -156,7 +156,7 @@ export default {
 
     data() {
         return {
-            phase: '1',
+            phase: '24',
             phaseList: [],
             month: 1,
             listIdCalendrierInPhase: [],
