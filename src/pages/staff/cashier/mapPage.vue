@@ -88,7 +88,7 @@ export default {
                     if (this.listBookingTable[idTable] != true)
                         this.listBookingTable[idTable] = false;
                 } catch (error) {
-                    console.log(error);
+                    //console.log(error);
                     this.listBookingTable[idTable] = false;
                 }
             }

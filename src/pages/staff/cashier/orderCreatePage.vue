@@ -26,13 +26,13 @@
         </span>
     </div>
     <hr class="mt-2 m-0">
-    <div class="h-100 d-flex align-items-end flex-column me-2">
-        <h6 class="text-start py-3 m-0 text-dark fw-bold ">Danh sách món order:</h6>
+    <div class="d-flex align-items-end flex-column me-2">
+        <h6 style="width: 100%;" class="text-start py-3 m-0 text-dark fw-bold ">Danh sách món order:</h6>
         <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th scope="col" style="width: 20px;">STT</th>
-                    <th scope="col">Mã món</th>
+                    <th scope="col" style="width: 120px;">Mã món</th>
                     <th scope="col">Tên món</th>
                     <th scope="col" style="width:100px;">Số lượng</th>
                     <th scope="col">Đơn giá (vnd)</th>
@@ -45,7 +45,7 @@
                     <td>{{ item.idmon }}</td>
                     <td>{{ item.tenmon }}</td>
                     <td>
-                        <input class="w-75" type="number" v-model="item.soluong">
+                        <input class="w-75" type="number" min="1" v-model="item.soluong">
                     </td>
                     <td>{{ formatNumber(item.gia) }}</td>
                     <td>
@@ -58,10 +58,39 @@
         </table>
         <button class="btn btn-success" @click="order">Order</button>
     </div>
+
+    <div class="h-100 d-flex align-items-end flex-column me-2">
+        <h6 style="width: 100%;" class="text-start py-3 m-0 text-dark fw-bold ">Danh sách món đã gọi:</h6>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 20px;">STT</th>
+                    <th scope="col" style="width: 120px;">Mã món</th>
+                    <th scope="col">Tên món</th>
+                    <th scope="col" style="width:100px;">Số lượng</th>
+                    <th scope="col">Giờ gọi</th>
+                    <th scope="col">Giờ trả</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in listDishTableOrdered" :key="index">
+                    <th scope="row">{{ index + 1 }}</th>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.tenmon }}</td>
+                    <td>
+                        <input class="w-75" type="number" disabled v-model="item.soluong">
+                    </td>
+                    <td>{{ formatDateTime(item.giodat) }}</td>
+                    <td>{{ formatDateTime(item.giotra) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script>
 import tableService from '@/services/table.service';
+import billService from '@/services/bill.service';
 import { ref } from 'vue';
 export default {
     props: {
@@ -79,7 +108,22 @@ export default {
             return (new Intl.NumberFormat().format(number))
         }
 
-        return { error, messageError, formatNumber };
+        function formatDateTime(date) {
+            if (!date) {
+                return '____';
+            }
+            let newDate = new Date(date);
+            let hours = newDate.getHours() >= 10 ? newDate.getHours() : `0${newDate.getHours()}`;
+            let minutes = newDate.getMinutes() >= 10 ? newDate.getMinutes() : `0${newDate.getMinutes()}`;
+            let seconds = newDate.getSeconds() >= 10 ? newDate.getSeconds() : `0${newDate.getSeconds()}`;
+            let dateIn = newDate.getDate() >= 10 ? newDate.getDate() : `0${newDate.getDate()}`;
+            let month = (newDate.getMonth() + 1) >= 10 ? (newDate.getMonth() + 1) : `0${(newDate.getMonth() + 1)}`;
+            let year = newDate.getFullYear() >= 10 ? newDate.getFullYear() : `0${newDate.getFullYear()}`;
+
+            return `${hours}:${minutes}:${seconds}, ${dateIn}/${month}/${year}`;
+        }
+
+        return { error, messageError, formatNumber, formatDateTime };
     },
 
     data() {
@@ -92,6 +136,7 @@ export default {
                 note: [],
                 token: '',
             },
+            listDishTableOrdered: [],
         };
     },
 
@@ -104,7 +149,33 @@ export default {
             try {
                 let table = await tableService.FindOneById(this.data.idTable);
                 this.data.status = table.trangthai;
+
+                let billInfor = await billService.FindOneByIdTable(this.data.idTable);
+
+                billInfor.chitietdatmon.forEach(element => {
+                    console.log(element);
+                    let dish = {};
+
+                    if (Object.keys(element.khuyenmai).length == 0) {
+                        dish.id = element.mon.idmon;
+                        dish.tenmon = element.mon.tenmon;
+                        dish.soluong = element.soluong;
+                        dish.giodat = element.giodat;
+                        dish.giotra = element.tramon;
+                        this.listDishTableOrdered.push(dish);
+                    } else {
+                        this.listDishTableOrdered.push({
+                            id: element.khuyenmai.idkhuyenmai,
+                            tenmon: element.khuyenmai.tenkhuyenmai,
+                            soluong: element.soluong,
+                            giodat: element.giodat,
+                            giotra: element.tramon,
+                        })
+                    }
+                });
+                console.log(this.listDishTableOrdered);
             } catch (e) {
+                this.listDishTableOrdered = [];
                 console.log(e);
             }
         },
