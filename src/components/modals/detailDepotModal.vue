@@ -57,6 +57,9 @@
                     </table>
                 </div>
             </div>
+            <span v-if="error" class="text-danger text-end" style="font-size: 14px;">
+                Số lượng hàng hóa không đúng, kiểm tra lại!
+            </span>
             <div class="d-flex justify-content-end mt-auto w-100">
                 <div class="mt-4 me-3">
                     <button type="button" class="btn btn-outline-danger" @click="closeModal">Đóng</button>
@@ -68,7 +71,7 @@
 </template>
 <script>
 import depotService from '@/services/depot.service';
-
+import { ref } from 'vue';
 export default {
     props: {
         id: {
@@ -78,7 +81,7 @@ export default {
     },
 
     setup(props, context) {
-
+        let error = ref(false);
         const closeModal = () => {
             context.emit("close");
         }
@@ -93,7 +96,7 @@ export default {
             return ` ${dateIn}/${month}/${year}`;
         }
 
-        return { closeModal, formatTime, };
+        return { closeModal, formatTime, error };
     },
 
     data() {
@@ -121,11 +124,19 @@ export default {
 
         async UpdateDishInDepot() {
             try {
-                let resultUpdate = await depotService.UpdateGoodsInDepot(this.detailInfor);
-                if (resultUpdate.statusCode == 200) {
-                    this.$emit('statusAction', 'success')
-                } else {
-                    this.$emit('statusAction', 'error')
+                this.detailInfor.forEach(e => {
+                    if (e.soluong < 0) {
+                        this.error = true;
+                    }
+                });
+
+                if (!this.error) {
+                    let resultUpdate = await depotService.UpdateGoodsInDepot(this.detailInfor);
+                    if (resultUpdate.statusCode == 200) {
+                        this.$emit('statusAction', 'success')
+                    } else {
+                        this.$emit('statusAction', 'error')
+                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -151,7 +162,7 @@ export default {
 .modal-bill-content {
     background-color: white;
     width: 50%;
-    height: 52%;
+    height: 53%;
     border-radius: 10px;
     animation-name: animationShow;
     animation-duration: 300ms;

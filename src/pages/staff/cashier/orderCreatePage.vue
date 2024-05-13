@@ -56,6 +56,9 @@
                 </tr>
             </tbody>
         </table>
+        <span v-if="errorquantity" class="text-danger text-end" style="font-size: 14px;">
+            Số lượng món không hợp lệ!
+        </span>
         <button class="btn btn-success" @click="order">Order</button>
     </div>
 
@@ -102,6 +105,7 @@ export default {
 
     setup() {
         let error = ref(false);
+        let errorquantity = ref(false);
         let messageError = ref('');
 
         const formatNumber = (number) => {
@@ -123,7 +127,7 @@ export default {
             return `${hours}:${minutes}:${seconds}, ${dateIn}/${month}/${year}`;
         }
 
-        return { error, messageError, formatNumber, formatDateTime };
+        return { error, messageError, formatNumber, formatDateTime, errorquantity };
     },
 
     data() {
@@ -153,7 +157,6 @@ export default {
                 let billInfor = await billService.FindOneByIdTable(this.data.idTable);
 
                 billInfor.chitietdatmon.forEach(element => {
-                    console.log(element);
                     let dish = {};
 
                     if (Object.keys(element.khuyenmai).length == 0) {
@@ -200,7 +203,13 @@ export default {
                     }
                 }
 
-                if (!this.error) {
+                this.listDishOrder.forEach(element => {
+                    if (element.soluong <= 0) {
+                        this.errorquantity = true;
+                    }
+                });
+
+                if (!this.error && !this.errorquantity) {
                     this.data.token = this.$store.state.staff.token;
                     this.listDishOrder.forEach(element => {
                         this.data.dishId.push(element.idmon);
